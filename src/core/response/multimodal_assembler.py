@@ -1,0 +1,1 @@
+"""Multimodal assembler placeholder."""

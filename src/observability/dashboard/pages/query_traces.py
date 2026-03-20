@@ -1,0 +1,1 @@
+"""Query traces page placeholder."""

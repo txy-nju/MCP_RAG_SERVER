@@ -1,0 +1,1 @@
+"""List collections tool placeholder."""

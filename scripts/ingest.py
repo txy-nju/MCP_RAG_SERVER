@@ -1,0 +1,1 @@
+"""CLI placeholder for ingestion."""

@@ -1,0 +1,24 @@
+llm:
+  provider: placeholder
+  model: placeholder-model
+
+embedding:
+  provider: placeholder
+  model: placeholder-embedding
+
+vector_store:
+  provider: chroma
+  collection: default
+
+retrieval:
+  top_k: 5
+
+rerank:
+  provider: none
+
+evaluation:
+  backend: custom
+
+observability:
+  log_level: INFO
+  trace_file: logs/traces.jsonl

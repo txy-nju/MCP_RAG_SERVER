@@ -1,0 +1,1 @@
+"""Data browser page placeholder."""
