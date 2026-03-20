@@ -2,10 +2,23 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 
-def main() -> int:
-    """Start the application once runtime wiring is implemented."""
-    print("Modular RAG MCP Server skeleton is ready. Runtime wiring will be added in later tasks.")
+from core.settings import Settings, load_settings
+from observability.logger import get_logger
+
+
+def main(settings_path: str | Path = "config/settings.yaml") -> int:
+    """Load settings and stop immediately if configuration is invalid."""
+    logger = get_logger()
+    try:
+        settings: Settings = load_settings(settings_path)
+    except (FileNotFoundError, ValueError) as exc:
+        logger.error("Failed to load settings: %s", exc)
+        return 1
+
+    logger.info("Loaded settings successfully from %s", settings_path)
+    logger.info("Configured LLM provider: %s", settings.llm.provider)
     return 0
 
 

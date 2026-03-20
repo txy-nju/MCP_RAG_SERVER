@@ -1,10 +1,10 @@
 llm:
-  provider: placeholder
-  model: placeholder-model
+  provider: azure
+  model: gpt-4o-mini
 
 embedding:
-  provider: placeholder
-  model: placeholder-embedding
+  provider: openai
+  model: text-embedding-3-small
 
 vector_store:
   provider: chroma
