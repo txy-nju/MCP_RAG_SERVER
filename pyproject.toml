@@ -9,9 +9,35 @@ description = "A pluggable, observable Modular RAG MCP Server."
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [{ name = "Project Maintainer" }]
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0,<9.0",
+]
 
 [tool.setuptools]
 package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = [
+    "tests",
+]
+python_files = [
+    "test_*.py",
+]
+python_classes = [
+    "Test*",
+]
+python_functions = [
+    "test_*",
+]
+markers = [
+    "unit: fast isolated tests",
+    "integration: multi-module tests",
+    "e2e: end-to-end scenarios",
+]
+addopts = "-q"
