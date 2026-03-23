@@ -36,6 +36,21 @@ class EmbeddingSettings:
 
 
 @dataclass(slots=True)
+class SplitterSettings:
+    """Text splitter configuration.
+
+    Attributes:
+        provider: Splitter backend identifier such as `recursive`.
+        chunk_size: Maximum chunk size used during text splitting.
+        chunk_overlap: Number of overlapping characters preserved between chunks.
+    """
+
+    provider: str
+    chunk_size: int
+    chunk_overlap: int
+
+
+@dataclass(slots=True)
 class VectorStoreSettings:
     """Vector store configuration.
 
@@ -101,6 +116,7 @@ class Settings:
     Attributes:
         llm: LLM-related configuration section.
         embedding: Embedding-related configuration section.
+        splitter: Splitter-related configuration section.
         vector_store: Vector store configuration section.
         retrieval: Retrieval behavior configuration section.
         rerank: Reranker configuration section.
@@ -110,6 +126,7 @@ class Settings:
 
     llm: LLMSettings
     embedding: EmbeddingSettings
+    splitter: SplitterSettings
     vector_store: VectorStoreSettings
     retrieval: RetrievalSettings
     rerank: RerankSettings
@@ -118,18 +135,7 @@ class Settings:
 
 
 def _require_mapping(data: Any, field_path: str) -> dict[str, Any]:
-    """Ensure a parsed YAML node is a mapping.
-
-    Args:
-        data: Raw value loaded from YAML.
-        field_path: Logical path used in error messages.
-
-    Returns:
-        The same value, narrowed to `dict[str, Any]`.
-
-    Raises:
-        ValueError: If `data` is not a mapping.
-    """
+    """Ensure a parsed YAML node is a mapping."""
 
     if not isinstance(data, dict):
         raise ValueError(f"Expected mapping at '{field_path}'")
@@ -137,19 +143,7 @@ def _require_mapping(data: Any, field_path: str) -> dict[str, Any]:
 
 
 def _require_value(data: dict[str, Any], key: str, field_path: str) -> Any:
-    """Read a required key from a mapping.
-
-    Args:
-        data: Mapping that should contain the required key.
-        key: Required field name inside `data`.
-        field_path: Parent path used to build a readable error message.
-
-    Returns:
-        The raw value associated with `key`.
-
-    Raises:
-        ValueError: If the key is missing or its value is empty.
-    """
+    """Read a required key from a mapping."""
 
     value = data.get(key)
     if value in (None, ""):
@@ -158,23 +152,16 @@ def _require_value(data: dict[str, Any], key: str, field_path: str) -> Any:
 
 
 def validate_settings(settings: Settings) -> None:
-    """Validate that the normalized settings object contains all required values.
-
-    Args:
-        settings: Parsed `Settings` instance produced by `load_settings`.
-
-    Returns:
-        None. The function succeeds silently when validation passes.
-
-    Raises:
-        ValueError: If any required field is empty after parsing.
-    """
+    """Validate that the normalized settings object contains all required values."""
 
     required_values = {
         "llm.provider": settings.llm.provider,
         "llm.model": settings.llm.model,
         "embedding.provider": settings.embedding.provider,
         "embedding.model": settings.embedding.model,
+        "splitter.provider": settings.splitter.provider,
+        "splitter.chunk_size": settings.splitter.chunk_size,
+        "splitter.chunk_overlap": settings.splitter.chunk_overlap,
         "vector_store.provider": settings.vector_store.provider,
         "vector_store.collection": settings.vector_store.collection,
         "retrieval.top_k": settings.retrieval.top_k,
@@ -187,20 +174,16 @@ def validate_settings(settings: Settings) -> None:
         if value in (None, ""):
             raise ValueError(f"Missing required setting: {field_path}")
 
+    if settings.splitter.chunk_size <= 0:
+        raise ValueError("splitter.chunk_size must be greater than 0")
+    if settings.splitter.chunk_overlap < 0:
+        raise ValueError("splitter.chunk_overlap must be greater than or equal to 0")
+    if settings.splitter.chunk_overlap >= settings.splitter.chunk_size:
+        raise ValueError("splitter.chunk_overlap must be smaller than splitter.chunk_size")
+
 
 def load_settings(path: str | Path) -> Settings:
-    """Load `settings.yaml` and convert it into typed settings objects.
-
-    Args:
-        path: File path to the YAML configuration file.
-
-    Returns:
-        A validated `Settings` instance containing all major config sections.
-
-    Raises:
-        FileNotFoundError: If the configuration file does not exist.
-        ValueError: If required sections or fields are missing or malformed.
-    """
+    """Load `settings.yaml` and convert it into typed settings objects."""
 
     settings_path = Path(path)
     with settings_path.open("r", encoding="utf-8") as handle:
@@ -209,6 +192,7 @@ def load_settings(path: str | Path) -> Settings:
     root = _require_mapping(raw_data, "settings")
     llm = _require_mapping(root.get("llm"), "llm")
     embedding = _require_mapping(root.get("embedding"), "embedding")
+    splitter = _require_mapping(root.get("splitter"), "splitter")
     vector_store = _require_mapping(root.get("vector_store"), "vector_store")
     retrieval = _require_mapping(root.get("retrieval"), "retrieval")
     rerank = _require_mapping(root.get("rerank"), "rerank")
@@ -223,6 +207,11 @@ def load_settings(path: str | Path) -> Settings:
         embedding=EmbeddingSettings(
             provider=str(_require_value(embedding, "provider", "embedding")),
             model=str(_require_value(embedding, "model", "embedding")),
+        ),
+        splitter=SplitterSettings(
+            provider=str(_require_value(splitter, "provider", "splitter")),
+            chunk_size=int(_require_value(splitter, "chunk_size", "splitter")),
+            chunk_overlap=int(_require_value(splitter, "chunk_overlap", "splitter")),
         ),
         vector_store=VectorStoreSettings(
             provider=str(_require_value(vector_store, "provider", "vector_store")),

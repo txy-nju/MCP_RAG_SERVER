@@ -12,6 +12,7 @@ from core.settings import (
     RetrievalSettings,
     RerankSettings,
     Settings,
+    SplitterSettings,
     VectorStoreSettings,
 )
 from libs.llm.base_llm import BaseLLM
@@ -29,6 +30,7 @@ def make_settings(provider: str = "fake", model: str = "demo-model") -> Settings
     return Settings(
         llm=LLMSettings(provider=provider, model=model),
         embedding=EmbeddingSettings(provider="openai", model="text-embedding-3-small"),
+        splitter=SplitterSettings(provider="recursive", chunk_size=1000, chunk_overlap=200),
         vector_store=VectorStoreSettings(provider="chroma", collection="default"),
         retrieval=RetrievalSettings(top_k=5),
         rerank=RerankSettings(provider="none"),

@@ -12,6 +12,7 @@ from core.settings import (
     RetrievalSettings,
     RerankSettings,
     Settings,
+    SplitterSettings,
     VectorStoreSettings,
 )
 from libs.embedding.base_embedding import BaseEmbedding
@@ -29,6 +30,7 @@ def make_settings(provider: str = "fake", model: str = "demo-model") -> Settings
     return Settings(
         llm=LLMSettings(provider="openai", model="gpt-4o-mini"),
         embedding=EmbeddingSettings(provider=provider, model=model),
+        splitter=SplitterSettings(provider="recursive", chunk_size=1000, chunk_overlap=200),
         vector_store=VectorStoreSettings(provider="chroma", collection="default"),
         retrieval=RetrievalSettings(top_k=5),
         rerank=RerankSettings(provider="none"),

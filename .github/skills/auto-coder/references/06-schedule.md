@@ -43,7 +43,7 @@
 |---------|---------|------|---------|------|
 | A1 | 初始化目录树与最小可运行入口 | [x] | 2026-03-20 | 已创建最小工程骨架、`.venv`，并通过 `compileall` 与顶层包导入验证 |
 | A2 | 引入 pytest 并建立测试目录约定 | [x] | 2026-03-20 | pytest 配置、smoke import 测试、fixtures 占位文档已创建，`pytest -q` 通过 |
-| A3 | 配置加载与校验（Settings） | [x] | 2026-03-23 | Settings dataclass、YAML 加载校验、main fail-fast、5个单元测试通过 |
+| A3 | 配置加载与校验（Settings） | [x] | 2026-03-23 | Settings dataclass、YAML 加载校验、main fail-fast、6个单元测试通过 |
 
 #### 阶段 B：Libs 可插拔层
 
@@ -51,7 +51,7 @@
 |---------|---------|------|---------|------|
 | B1 | LLM 抽象接口与工厂 | [x] | 2026-03-23 | BaseLLM 抽象、注册式 LLMFactory、Fake provider 工厂路由测试通过 |
 | B2 | Embedding 抽象接口与工厂 | [x] | 2026-03-23 | BaseEmbedding 抽象、注册式 EmbeddingFactory、Fake provider 工厂路由测试通过 |
-| B3 | Splitter 抽象接口与工厂 | [ ] | | |
+| B3 | Splitter 抽象接口与工厂 | [x] | 2026-03-23 | BaseSplitter 抽象、注册式 SplitterFactory、Fake provider 工厂路由测试通过 |
 | B4 | VectorStore 抽象接口与工厂 | [ ] | | |
 | B5 | Reranker 抽象接口与工厂（含 None 回退） | [ ] | | |
 | B6 | Evaluator 抽象接口与工厂 | [ ] | | |

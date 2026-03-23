@@ -17,6 +17,10 @@ llm:
 embedding:
   provider: openai
   model: text-embedding-3-small
+splitter:
+  provider: recursive
+  chunk_size: 1000
+  chunk_overlap: 200
 vector_store:
   provider: chroma
   collection: test
@@ -38,6 +42,10 @@ llm:
   model: gpt-4o-mini
 embedding:
   model: text-embedding-3-small
+splitter:
+  provider: recursive
+  chunk_size: 1000
+  chunk_overlap: 200
 vector_store:
   provider: chroma
   collection: test
@@ -62,6 +70,7 @@ def test_load_settings_returns_settings_object(tmp_path: Path) -> None:
 
     assert isinstance(settings, Settings)
     assert settings.embedding.provider == "openai"
+    assert settings.splitter.provider == "recursive"
     assert settings.vector_store.collection == "test"
 
 
@@ -95,3 +104,15 @@ def test_main_returns_one_for_missing_config_file(tmp_path: Path) -> None:
     missing_path = tmp_path / "missing-settings.yaml"
 
     assert main(missing_path) == 1
+
+
+@pytest.mark.unit
+def test_load_settings_rejects_overlap_greater_than_chunk_size(tmp_path: Path) -> None:
+    invalid_splitter_config = VALID_CONFIG.replace("chunk_size: 1000", "chunk_size: 100").replace(
+        "chunk_overlap: 200", "chunk_overlap: 100"
+    )
+    config_path = tmp_path / "settings.yaml"
+    config_path.write_text(invalid_splitter_config, encoding="utf-8")
+
+    with pytest.raises(ValueError, match="splitter.chunk_overlap must be smaller than splitter.chunk_size"):
+        load_settings(config_path)
