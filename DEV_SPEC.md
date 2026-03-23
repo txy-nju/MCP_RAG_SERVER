@@ -1953,7 +1953,7 @@ dashboard:
 |---------|---------|------|---------|------|
 | A1 | 初始化目录树与最小可运行入口 | [x] | 2026-03-20 | 已创建最小工程骨架、`.venv`，并通过 `compileall` 与顶层包导入验证 |
 | A2 | 引入 pytest 并建立测试目录约定 | [x] | 2026-03-20 | pytest 配置、smoke import 测试、fixtures 占位文档已创建，`pytest -q` 通过 |
-| A3 | 配置加载与校验（Settings） | [x] | 2026-03-20 | Settings dataclass、YAML 加载校验、main fail-fast、4个单元测试通过 |
+| A3 | 配置加载与校验（Settings） | [x] | 2026-03-23 | Settings dataclass、YAML 加载校验、main fail-fast、5个单元测试通过 |
 
 #### 阶段 B：Libs 可插拔层
 
@@ -3210,5 +3210,6 @@ RAG 系统的上限取决于其对特定业务数据的理解深度。未来的�
     - **未来演进**：不再硬编码使用混合检索。Server 可以将 `keyword_search` 和 `semantic_search` 作为独立工具暴露。Agent 可以根据用户意图自主判断：如果是搜人名，只用关键词搜；如果是搜概念，通过语义搜。这种工具使用的灵活性正是 Agentic RAG 的核心魅力。
 
 这种演进方向将把本项目从一个“智能搜索引擎”升级为一个“智能研究助理”的基础设施底座。
+
 
 

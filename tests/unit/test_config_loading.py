@@ -88,3 +88,10 @@ def test_main_returns_one_for_invalid_config(tmp_path: Path) -> None:
     config_path.write_text(INVALID_CONFIG, encoding="utf-8")
 
     assert main(config_path) == 1
+
+
+@pytest.mark.unit
+def test_main_returns_one_for_missing_config_file(tmp_path: Path) -> None:
+    missing_path = tmp_path / "missing-settings.yaml"
+
+    assert main(missing_path) == 1
