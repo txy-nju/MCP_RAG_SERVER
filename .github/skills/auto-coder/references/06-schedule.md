@@ -50,7 +50,7 @@
 | 任务编号 | 任务名称 | 状态 | 完成日期 | 备注 |
 |---------|---------|------|---------|------|
 | B1 | LLM 抽象接口与工厂 | [x] | 2026-03-23 | BaseLLM 抽象、注册式 LLMFactory、Fake provider 工厂路由测试通过 |
-| B2 | Embedding 抽象接口与工厂 | [ ] | | |
+| B2 | Embedding 抽象接口与工厂 | [x] | 2026-03-23 | BaseEmbedding 抽象、注册式 EmbeddingFactory、Fake provider 工厂路由测试通过 |
 | B3 | Splitter 抽象接口与工厂 | [ ] | | |
 | B4 | VectorStore 抽象接口与工厂 | [ ] | | |
 | B5 | Reranker 抽象接口与工厂（含 None 回退） | [ ] | | |
