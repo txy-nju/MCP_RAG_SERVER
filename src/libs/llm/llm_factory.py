@@ -78,11 +78,13 @@ class LLMFactory:
             return
         from libs.llm.azure_llm import AzureLLM
         from libs.llm.deepseek_llm import DeepSeekLLM
+        from libs.llm.ollama_llm import OllamaLLM
         from libs.llm.openai_llm import OpenAILLM
 
         cls.register("openai", OpenAILLM)
         cls.register("azure", AzureLLM)
         cls.register("deepseek", DeepSeekLLM)
+        cls.register("ollama", OllamaLLM)
         cls._builtin_providers_loaded = True
 
     @staticmethod
