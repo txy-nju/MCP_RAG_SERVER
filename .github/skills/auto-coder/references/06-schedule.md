@@ -55,7 +55,7 @@
 | B4 | VectorStore 抽象接口与工厂 | [x] | 2026-03-23 | BaseVectorStore 契约、注册式 VectorStoreFactory、contract test 约束输入输出 shape |
 | B5 | Reranker 抽象接口与工厂（含 None 回退） | [x] | 2026-03-24 | BaseReranker、NoneReranker、注册式工厂与单测已完成 |
 | B6 | Evaluator 抽象接口与工厂 | [x] | 2026-03-24 | BaseEvaluator、CustomEvaluator、注册式 EvaluatorFactory 与单测已完成 |
-| B7.1 | OpenAI-Compatible LLM 实现 | [ ] | | |
+| B7.1 | OpenAI-Compatible LLM 实现 | [x] | 2026-03-24 | OpenAI/Azure/DeepSeek HTTP LLM、工厂内建注册与 smoke tests 已完成 |
 | B7.2 | Ollama LLM 实现 | [ ] | | |
 | B7.3 | OpenAI & Azure Embedding 实现 | [ ] | | |
 | B7.4 | Ollama Embedding 实现 | [ ] | | |

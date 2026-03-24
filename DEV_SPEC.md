@@ -1965,7 +1965,7 @@ dashboard:
 | B4 | VectorStore 抽象接口与工厂 | [x] | 2026-03-23 | BaseVectorStore 契约、注册式 VectorStoreFactory、contract test 约束输入输出 shape |
 | B5 | Reranker 抽象接口与工厂（含 None 回退） | [x] | 2026-03-24 | BaseReranker、NoneReranker、注册式工厂与单测已完成 |
 | B6 | Evaluator 抽象接口与工厂 | [x] | 2026-03-24 | BaseEvaluator、CustomEvaluator、注册式 EvaluatorFactory 与单测已完成 |
-| B7.1 | OpenAI-Compatible LLM 实现 | [ ] | | |
+| B7.1 | OpenAI-Compatible LLM 实现 | [x] | 2026-03-24 | OpenAI/Azure/DeepSeek HTTP LLM、工厂内建注册与 smoke tests 已完成 |
 | B7.2 | Ollama LLM 实现 | [ ] | | |
 | B7.3 | OpenAI & Azure Embedding 实现 | [ ] | | |
 | B7.4 | Ollama Embedding 实现 | [ ] | | |
@@ -3210,6 +3210,7 @@ RAG 系统的上限取决于其对特定业务数据的理解深度。未来的�
     - **未来演进**：不再硬编码使用混合检索。Server 可以将 `keyword_search` 和 `semantic_search` 作为独立工具暴露。Agent 可以根据用户意图自主判断：如果是搜人名，只用关键词搜；如果是搜概念，通过语义搜。这种工具使用的灵活性正是 Agentic RAG 的核心魅力。
 
 这种演进方向将把本项目从一个“智能搜索引擎”升级为一个“智能研究助理”的基础设施底座。
+
 
 
 

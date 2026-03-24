@@ -10,6 +10,7 @@ class LLMFactory:
     """Registry-backed factory for pluggable LLM providers."""
 
     _providers: dict[str, type[BaseLLM]] = {}
+    _builtin_providers_loaded = False
 
     @classmethod
     def register(cls, provider: str, llm_cls: type[BaseLLM]) -> None:
@@ -58,6 +59,7 @@ class LLMFactory:
             provider.
         """
 
+        cls._ensure_builtin_providers_loaded()
         llm_settings = cls._extract_llm_settings(settings)
         provider = llm_settings.provider.strip().lower()
         llm_cls = cls._providers.get(provider)
@@ -67,6 +69,21 @@ class LLMFactory:
                 f"Unsupported LLM provider: {llm_settings.provider}. Available providers: {available}"
             )
         return llm_cls.from_settings(llm_settings)
+
+    @classmethod
+    def _ensure_builtin_providers_loaded(cls) -> None:
+        """Load built-in provider modules on first factory use."""
+
+        if cls._builtin_providers_loaded:
+            return
+        from libs.llm.azure_llm import AzureLLM
+        from libs.llm.deepseek_llm import DeepSeekLLM
+        from libs.llm.openai_llm import OpenAILLM
+
+        cls.register("openai", OpenAILLM)
+        cls.register("azure", AzureLLM)
+        cls.register("deepseek", DeepSeekLLM)
+        cls._builtin_providers_loaded = True
 
     @staticmethod
     def _extract_llm_settings(settings: Settings | LLMSettings) -> LLMSettings:
