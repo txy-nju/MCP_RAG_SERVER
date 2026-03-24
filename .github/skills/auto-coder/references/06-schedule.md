@@ -52,7 +52,7 @@
 | B1 | LLM 抽象接口与工厂 | [x] | 2026-03-23 | BaseLLM 抽象、注册式 LLMFactory、Fake provider 工厂路由测试通过 |
 | B2 | Embedding 抽象接口与工厂 | [x] | 2026-03-23 | BaseEmbedding 抽象、注册式 EmbeddingFactory、Fake provider 工厂路由测试通过 |
 | B3 | Splitter 抽象接口与工厂 | [x] | 2026-03-23 | BaseSplitter 抽象、注册式 SplitterFactory、Fake provider 工厂路由测试通过 |
-| B4 | VectorStore 抽象接口与工厂 | [ ] | | |
+| B4 | VectorStore 抽象接口与工厂 | [x] | 2026-03-23 | BaseVectorStore 契约、注册式 VectorStoreFactory、contract test 约束输入输出 shape |
 | B5 | Reranker 抽象接口与工厂（含 None 回退） | [ ] | | |
 | B6 | Evaluator 抽象接口与工厂 | [ ] | | |
 | B7.1 | OpenAI-Compatible LLM 实现 | [ ] | | |
@@ -157,7 +157,7 @@
 | 阶段 | 总任务数 | 已完成 | 进度 |
 |------|---------|--------|------|
 | 阶段 A | 3 | 3 | 100% |
-| 阶段 B | 16 | 1 | 8% |
+| 阶段 B | 16 | 4 | 25% |
 | 阶段 C | 15 | 0 | 0% |
 | 阶段 D | 7 | 0 | 0% |
 | 阶段 E | 6 | 0 | 0% |
