@@ -52,10 +52,12 @@ class EmbeddingFactory:
         if cls._builtin_providers_loaded:
             return
         from libs.embedding.azure_embedding import AzureEmbedding
+        from libs.embedding.ollama_embedding import OllamaEmbedding
         from libs.embedding.openai_embedding import OpenAIEmbedding
 
         cls.register("openai", OpenAIEmbedding)
         cls.register("azure", AzureEmbedding)
+        cls.register("ollama", OllamaEmbedding)
         cls._builtin_providers_loaded = True
 
     @staticmethod
