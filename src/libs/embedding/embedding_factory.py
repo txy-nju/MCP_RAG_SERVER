@@ -10,6 +10,7 @@ class EmbeddingFactory:
     """Registry-backed factory for pluggable embedding providers."""
 
     _providers: dict[str, type[BaseEmbedding]] = {}
+    _builtin_providers_loaded = False
 
     @classmethod
     def register(cls, provider: str, embedding_cls: type[BaseEmbedding]) -> None:
@@ -32,6 +33,7 @@ class EmbeddingFactory:
     def create(cls, settings: Settings | EmbeddingSettings) -> BaseEmbedding:
         """Create an embedding instance from top-level settings or embedding settings."""
 
+        cls._ensure_builtin_providers_loaded()
         embedding_settings = cls._extract_embedding_settings(settings)
         provider = embedding_settings.provider.strip().lower()
         embedding_cls = cls._providers.get(provider)
@@ -42,6 +44,19 @@ class EmbeddingFactory:
                 f"{embedding_settings.provider}. Available providers: {available}"
             )
         return embedding_cls.from_settings(embedding_settings)
+
+    @classmethod
+    def _ensure_builtin_providers_loaded(cls) -> None:
+        """Load built-in provider modules on first factory use."""
+
+        if cls._builtin_providers_loaded:
+            return
+        from libs.embedding.azure_embedding import AzureEmbedding
+        from libs.embedding.openai_embedding import OpenAIEmbedding
+
+        cls.register("openai", OpenAIEmbedding)
+        cls.register("azure", AzureEmbedding)
+        cls._builtin_providers_loaded = True
 
     @staticmethod
     def _extract_embedding_settings(settings: Settings | EmbeddingSettings) -> EmbeddingSettings:

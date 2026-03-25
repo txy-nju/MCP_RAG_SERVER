@@ -42,12 +42,15 @@ def make_settings(provider: str = "fake", model: str = "demo-model") -> Settings
 @pytest.fixture(autouse=True)
 def reset_embedding_registry() -> None:
     original = dict(EmbeddingFactory._providers)
+    original_loaded = EmbeddingFactory._builtin_providers_loaded
     try:
         EmbeddingFactory._providers.clear()
+        EmbeddingFactory._builtin_providers_loaded = False
         yield
     finally:
         EmbeddingFactory._providers.clear()
         EmbeddingFactory._providers.update(original)
+        EmbeddingFactory._builtin_providers_loaded = original_loaded
 
 
 @pytest.mark.unit
