@@ -16,6 +16,7 @@ from core.settings import (
     VectorStoreSettings,
 )
 from libs.splitter.base_splitter import BaseSplitter
+from libs.splitter.recursive_splitter import RecursiveSplitter
 from libs.splitter.splitter_factory import SplitterFactory
 
 
@@ -42,12 +43,15 @@ def make_settings(provider: str = "fake") -> Settings:
 @pytest.fixture(autouse=True)
 def reset_splitter_registry() -> None:
     original = dict(SplitterFactory._providers)
+    original_loaded = SplitterFactory._builtin_providers_loaded
     try:
         SplitterFactory._providers.clear()
+        SplitterFactory._builtin_providers_loaded = False
         yield
     finally:
         SplitterFactory._providers.clear()
         SplitterFactory._providers.update(original)
+        SplitterFactory._builtin_providers_loaded = original_loaded
 
 
 @pytest.mark.unit
@@ -81,3 +85,10 @@ def test_factory_reports_unknown_provider() -> None:
 def test_register_rejects_non_splitter_classes() -> None:
     with pytest.raises(TypeError, match="must inherit from BaseSplitter"):
         SplitterFactory.register("bad", object)
+
+
+@pytest.mark.unit
+def test_factory_registers_builtin_recursive_provider() -> None:
+    splitter = SplitterFactory.create(make_settings(provider="recursive"))
+
+    assert isinstance(splitter, RecursiveSplitter)

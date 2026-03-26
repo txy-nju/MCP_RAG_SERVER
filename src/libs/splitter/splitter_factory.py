@@ -10,6 +10,7 @@ class SplitterFactory:
     """Registry-backed factory for pluggable splitter providers."""
 
     _providers: dict[str, type[BaseSplitter]] = {}
+    _builtin_providers_loaded = False
 
     @classmethod
     def register(cls, provider: str, splitter_cls: type[BaseSplitter]) -> None:
@@ -32,6 +33,7 @@ class SplitterFactory:
     def create(cls, settings: Settings | SplitterSettings) -> BaseSplitter:
         """Create a splitter instance from top-level settings or splitter settings."""
 
+        cls._ensure_builtin_providers_loaded()
         splitter_settings = cls._extract_splitter_settings(settings)
         provider = splitter_settings.provider.strip().lower()
         splitter_cls = cls._providers.get(provider)
@@ -41,6 +43,17 @@ class SplitterFactory:
                 f"Unsupported splitter provider: {splitter_settings.provider}. Available providers: {available}"
             )
         return splitter_cls.from_settings(splitter_settings)
+
+    @classmethod
+    def _ensure_builtin_providers_loaded(cls) -> None:
+        """Load built-in provider modules on first factory use."""
+
+        if cls._builtin_providers_loaded:
+            return
+        from libs.splitter.recursive_splitter import RecursiveSplitter
+
+        cls.register("recursive", RecursiveSplitter)
+        cls._builtin_providers_loaded = True
 
     @staticmethod
     def _extract_splitter_settings(settings: Settings | SplitterSettings) -> SplitterSettings:
