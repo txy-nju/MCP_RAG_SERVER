@@ -24,6 +24,7 @@ splitter:
 vector_store:
   provider: chroma
   collection: test
+  persist_path: data/db/chroma
 retrieval:
   top_k: 5
 rerank:
@@ -49,6 +50,7 @@ splitter:
 vector_store:
   provider: chroma
   collection: test
+  persist_path: data/db/chroma
 retrieval:
   top_k: 5
 rerank:
@@ -72,6 +74,7 @@ def test_load_settings_returns_settings_object(tmp_path: Path) -> None:
     assert settings.embedding.provider == "openai"
     assert settings.splitter.provider == "recursive"
     assert settings.vector_store.collection == "test"
+    assert settings.vector_store.persist_path == "data/db/chroma"
 
 
 @pytest.mark.unit
@@ -116,3 +119,13 @@ def test_load_settings_rejects_overlap_greater_than_chunk_size(tmp_path: Path) -
 
     with pytest.raises(ValueError, match="splitter.chunk_overlap must be smaller than splitter.chunk_size"):
         load_settings(config_path)
+
+
+@pytest.mark.unit
+def test_load_settings_defaults_vector_store_persist_path_when_missing(tmp_path: Path) -> None:
+    config_path = tmp_path / "settings.yaml"
+    config_path.write_text(VALID_CONFIG.replace("  persist_path: data/db/chroma\n", ""), encoding="utf-8")
+
+    settings = load_settings(config_path)
+
+    assert settings.vector_store.persist_path == "data/db/chroma"

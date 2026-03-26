@@ -60,7 +60,7 @@
 | B7.3 | OpenAI & Azure Embedding 实现 | [x] | 2026-03-25 | OpenAI/Azure Embedding、工厂内建注册与 smoke tests 已完成 |
 | B7.4 | Ollama Embedding 实现 | [x] | 2026-03-25 | Ollama Embedding、本地 HTTP 批量向量化与 mock tests 已完成 |
 | B7.5 | Recursive Splitter 默认实现 | [x] | 2026-03-26 | RecursiveSplitter 默认实现、工厂内建注册与单测已完成 |
-| B7.6 | ChromaStore 默认实现 | [ ] | | |
+| B7.6 | ChromaStore 默认实现 | [x] | 2026-03-26 | ChromaStore 默认实现、工厂注册、persist_path 配置与 roundtrip 集成测试已完成 |
 | B7.7 | LLM Reranker 实现 | [ ] | | |
 | B7.8 | Cross-Encoder Reranker 实现 | [ ] | | |
 | B8 | Vision LLM 抽象接口与工厂集成 | [ ] | | |

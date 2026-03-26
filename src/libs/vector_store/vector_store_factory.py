@@ -10,6 +10,7 @@ class VectorStoreFactory:
     """Registry-backed factory for pluggable vector store providers."""
 
     _providers: dict[str, type[BaseVectorStore]] = {}
+    _builtin_providers_loaded = False
 
     @classmethod
     def register(cls, provider: str, vector_store_cls: type[BaseVectorStore]) -> None:
@@ -32,6 +33,7 @@ class VectorStoreFactory:
     def create(cls, settings: Settings | VectorStoreSettings) -> BaseVectorStore:
         """Create a vector store instance from top-level settings or vector-store settings."""
 
+        cls._ensure_builtin_providers_loaded()
         vector_store_settings = cls._extract_vector_store_settings(settings)
         provider = vector_store_settings.provider.strip().lower()
         vector_store_cls = cls._providers.get(provider)
@@ -42,6 +44,17 @@ class VectorStoreFactory:
                 f"{vector_store_settings.provider}. Available providers: {available}"
             )
         return vector_store_cls.from_settings(vector_store_settings)
+
+    @classmethod
+    def _ensure_builtin_providers_loaded(cls) -> None:
+        """Load built-in provider modules on first factory use."""
+
+        if cls._builtin_providers_loaded:
+            return
+        from libs.vector_store.chroma_store import ChromaStore
+
+        cls.register("chroma", ChromaStore)
+        cls._builtin_providers_loaded = True
 
     @staticmethod
     def _extract_vector_store_settings(settings: Settings | VectorStoreSettings) -> VectorStoreSettings:

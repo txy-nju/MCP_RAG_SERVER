@@ -52,7 +52,7 @@ def make_settings(provider: str = "fake", collection: str = "demo") -> Settings:
         llm=LLMSettings(provider="openai", model="gpt-4o-mini"),
         embedding=EmbeddingSettings(provider="openai", model="text-embedding-3-small"),
         splitter=SplitterSettings(provider="recursive", chunk_size=1000, chunk_overlap=200),
-        vector_store=VectorStoreSettings(provider=provider, collection=collection),
+        vector_store=VectorStoreSettings(provider=provider, collection=collection, persist_path="data/db/chroma"),
         retrieval=RetrievalSettings(top_k=5),
         rerank=RerankSettings(provider="none"),
         evaluation=EvaluationSettings(backend="custom"),
@@ -63,12 +63,15 @@ def make_settings(provider: str = "fake", collection: str = "demo") -> Settings:
 @pytest.fixture(autouse=True)
 def reset_vector_store_registry() -> None:
     original = dict(VectorStoreFactory._providers)
+    original_loaded = VectorStoreFactory._builtin_providers_loaded
     try:
         VectorStoreFactory._providers.clear()
+        VectorStoreFactory._builtin_providers_loaded = False
         yield
     finally:
         VectorStoreFactory._providers.clear()
         VectorStoreFactory._providers.update(original)
+        VectorStoreFactory._builtin_providers_loaded = original_loaded
 
 
 @pytest.mark.unit
@@ -85,7 +88,9 @@ def test_factory_routes_provider_from_top_level_settings() -> None:
 def test_factory_accepts_vector_store_settings_directly() -> None:
     VectorStoreFactory.register("fake", FakeVectorStore)
 
-    vector_store = VectorStoreFactory.create(VectorStoreSettings(provider="fake", collection="direct"))
+    vector_store = VectorStoreFactory.create(
+        VectorStoreSettings(provider="fake", collection="direct", persist_path="data/db/chroma")
+    )
 
     assert isinstance(vector_store, FakeVectorStore)
     assert vector_store.collection == "direct"

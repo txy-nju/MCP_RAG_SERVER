@@ -14,6 +14,7 @@ splitter:
 vector_store:
   provider: chroma
   collection: default
+  persist_path: data/db/chroma
 
 retrieval:
   top_k: 5

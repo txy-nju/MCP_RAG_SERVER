@@ -11,12 +11,7 @@ import yaml
 
 @dataclass(slots=True)
 class LLMSettings:
-    """LLM provider configuration loaded from `settings.yaml`.
-
-    Attributes:
-        provider: LLM backend identifier such as `azure` or `openai`.
-        model: Concrete model name used by the selected provider.
-    """
+    """LLM provider configuration loaded from `settings.yaml`."""
 
     provider: str
     model: str
@@ -24,12 +19,7 @@ class LLMSettings:
 
 @dataclass(slots=True)
 class EmbeddingSettings:
-    """Embedding model configuration.
-
-    Attributes:
-        provider: Embedding backend identifier.
-        model: Embedding model name that will generate vectors.
-    """
+    """Embedding model configuration."""
 
     provider: str
     model: str
@@ -37,13 +27,7 @@ class EmbeddingSettings:
 
 @dataclass(slots=True)
 class SplitterSettings:
-    """Text splitter configuration.
-
-    Attributes:
-        provider: Splitter backend identifier such as `recursive`.
-        chunk_size: Maximum chunk size used during text splitting.
-        chunk_overlap: Number of overlapping characters preserved between chunks.
-    """
+    """Text splitter configuration."""
 
     provider: str
     chunk_size: int
@@ -52,58 +36,37 @@ class SplitterSettings:
 
 @dataclass(slots=True)
 class VectorStoreSettings:
-    """Vector store configuration.
-
-    Attributes:
-        provider: Storage backend name, for example `chroma`.
-        collection: Logical collection name used to group indexed data.
-    """
+    """Vector store configuration."""
 
     provider: str
     collection: str
+    persist_path: str = "data/db/chroma"
 
 
 @dataclass(slots=True)
 class RetrievalSettings:
-    """Retrieval-stage configuration.
-
-    Attributes:
-        top_k: Number of candidate results to fetch during retrieval.
-    """
+    """Retrieval-stage configuration."""
 
     top_k: int
 
 
 @dataclass(slots=True)
 class RerankSettings:
-    """Reranker configuration.
-
-    Attributes:
-        provider: Reranker backend name, or `none` to disable reranking.
-    """
+    """Reranker configuration."""
 
     provider: str
 
 
 @dataclass(slots=True)
 class EvaluationSettings:
-    """Evaluation backend configuration.
-
-    Attributes:
-        backend: Evaluation backend identifier, such as `custom` or `ragas`.
-    """
+    """Evaluation backend configuration."""
 
     backend: str
 
 
 @dataclass(slots=True)
 class ObservabilitySettings:
-    """Observability and logging configuration.
-
-    Attributes:
-        log_level: Logging verbosity used by the application.
-        trace_file: Output path for persisted trace records.
-    """
+    """Observability and logging configuration."""
 
     log_level: str
     trace_file: str
@@ -111,18 +74,7 @@ class ObservabilitySettings:
 
 @dataclass(slots=True)
 class Settings:
-    """Top-level normalized application settings object.
-
-    Attributes:
-        llm: LLM-related configuration section.
-        embedding: Embedding-related configuration section.
-        splitter: Splitter-related configuration section.
-        vector_store: Vector store configuration section.
-        retrieval: Retrieval behavior configuration section.
-        rerank: Reranker configuration section.
-        evaluation: Evaluation backend configuration section.
-        observability: Logging and trace configuration section.
-    """
+    """Top-level normalized application settings object."""
 
     llm: LLMSettings
     embedding: EmbeddingSettings
@@ -164,6 +116,7 @@ def validate_settings(settings: Settings) -> None:
         "splitter.chunk_overlap": settings.splitter.chunk_overlap,
         "vector_store.provider": settings.vector_store.provider,
         "vector_store.collection": settings.vector_store.collection,
+        "vector_store.persist_path": settings.vector_store.persist_path,
         "retrieval.top_k": settings.retrieval.top_k,
         "rerank.provider": settings.rerank.provider,
         "evaluation.backend": settings.evaluation.backend,
@@ -216,6 +169,7 @@ def load_settings(path: str | Path) -> Settings:
         vector_store=VectorStoreSettings(
             provider=str(_require_value(vector_store, "provider", "vector_store")),
             collection=str(_require_value(vector_store, "collection", "vector_store")),
+            persist_path=str(vector_store.get("persist_path", "data/db/chroma")),
         ),
         retrieval=RetrievalSettings(top_k=int(_require_value(retrieval, "top_k", "retrieval"))),
         rerank=RerankSettings(provider=str(_require_value(rerank, "provider", "rerank"))),
