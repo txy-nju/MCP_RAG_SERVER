@@ -64,7 +64,7 @@
 | B7.7 | LLM Reranker 实现 | [x] | 2026-03-27 | 读取 rerank prompt、解析结构化 ranked_ids、失败时抛出回退信号，单测已通过 |
 | B7.8 | Cross-Encoder Reranker 实现 | [x] | 2026-03-27 | 可运行占位实现、支持 mock scorer、失败时抛出回退信号，单测已通过 |
 | B8 | Vision LLM 抽象接口与工厂集成 | [x] | | |
-| B9 | Azure Vision LLM 实现 | [ ] | | |
+| B9 | Azure Vision LLM 实现 | [x] | | |
 
 #### 阶段 C：Ingestion Pipeline MVP
 

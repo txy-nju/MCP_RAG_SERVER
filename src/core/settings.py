@@ -20,6 +20,13 @@ class LLMSettings:
 
     provider: str
     model: str
+    endpoint: str | None = None
+    api_version: str | None = None
+    api_url: str | None = None
+    api_key: str | None = None
+    deployment_name: str | None = None
+    max_image_size: int | None = None
+    timeout_seconds: int | None = None
 
 
 @dataclass(slots=True)
@@ -111,6 +118,34 @@ def _require_value(data: dict[str, Any], key: str, field_path: str) -> Any:
     return value
 
 
+def _optional_str(data: dict[str, Any], key: str) -> str | None:
+    value = data.get(key)
+    if value in (None, ""):
+        return None
+    return str(value)
+
+
+def _optional_int(data: dict[str, Any], key: str) -> int | None:
+    value = data.get(key)
+    if value in (None, ""):
+        return None
+    return int(value)
+
+
+def _build_llm_settings(data: dict[str, Any], field_path: str) -> LLMSettings:
+    return LLMSettings(
+        provider=str(_require_value(data, "provider", field_path)),
+        model=str(_require_value(data, "model", field_path)),
+        endpoint=_optional_str(data, "endpoint") or _optional_str(data, "azure_endpoint"),
+        api_version=_optional_str(data, "api_version"),
+        api_url=_optional_str(data, "api_url"),
+        api_key=_optional_str(data, "api_key"),
+        deployment_name=_optional_str(data, "deployment_name"),
+        max_image_size=_optional_int(data, "max_image_size"),
+        timeout_seconds=_optional_int(data, "timeout_seconds"),
+    )
+
+
 def validate_settings(settings: Settings) -> None:
     """Validate that the normalized settings object contains all required values."""
 
@@ -142,6 +177,10 @@ def validate_settings(settings: Settings) -> None:
             raise ValueError("Missing required setting: vision_llm.provider")
         if settings.vision_llm.model in (None, ""):
             raise ValueError("Missing required setting: vision_llm.model")
+        if settings.vision_llm.max_image_size is not None and settings.vision_llm.max_image_size <= 0:
+            raise ValueError("vision_llm.max_image_size must be greater than 0")
+        if settings.vision_llm.timeout_seconds is not None and settings.vision_llm.timeout_seconds <= 0:
+            raise ValueError("vision_llm.timeout_seconds must be greater than 0")
 
     if settings.splitter.chunk_size <= 0:
         raise ValueError("splitter.chunk_size must be greater than 0")
@@ -173,17 +212,10 @@ def load_settings(path: str | Path) -> Settings:
 
     vision_llm = None
     if vision_llm_raw is not None:
-        vision_llm_data = _require_mapping(vision_llm_raw, "vision_llm")
-        vision_llm = LLMSettings(
-            provider=str(_require_value(vision_llm_data, "provider", "vision_llm")),
-            model=str(_require_value(vision_llm_data, "model", "vision_llm")),
-        )
+        vision_llm = _build_llm_settings(_require_mapping(vision_llm_raw, "vision_llm"), "vision_llm")
 
     settings = Settings(
-        llm=LLMSettings(
-            provider=str(_require_value(llm, "provider", "llm")),
-            model=str(_require_value(llm, "model", "llm")),
-        ),
+        llm=_build_llm_settings(llm, "llm"),
         embedding=EmbeddingSettings(
             provider=str(_require_value(embedding, "provider", "embedding")),
             model=str(_require_value(embedding, "model", "embedding")),
