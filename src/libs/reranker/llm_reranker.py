@@ -41,15 +41,13 @@ class LLMReranker(BaseReranker):
         if not isinstance(settings, Settings):
             raise ValueError("LLMReranker requires top-level Settings so it can initialize the configured LLM")
 
-        prompt_path = str(getattr(settings.rerank, "prompt_path", cls.default_prompt_path))
-        max_candidates = int(getattr(settings.rerank, "max_candidates", cls.default_max_candidates))
         llm = LLMFactory.create(settings)
         return cls(
             provider=str(settings.rerank.provider),
             model=llm.model,
             llm=llm,
-            prompt_path=prompt_path,
-            max_candidates=max_candidates,
+            prompt_path=str(settings.rerank.prompt_path),
+            max_candidates=int(settings.rerank.max_candidates),
         )
 
     def rerank(

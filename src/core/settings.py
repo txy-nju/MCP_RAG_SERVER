@@ -9,6 +9,11 @@ from typing import Any
 import yaml
 
 
+DEFAULT_VECTOR_STORE_PERSIST_PATH = "data/db/chroma"
+DEFAULT_RERANK_PROMPT_PATH = "config/prompts/rerank.txt"
+DEFAULT_RERANK_MAX_CANDIDATES = 20
+
+
 @dataclass(slots=True)
 class LLMSettings:
     """LLM provider configuration loaded from `settings.yaml`."""
@@ -40,7 +45,7 @@ class VectorStoreSettings:
 
     provider: str
     collection: str
-    persist_path: str = "data/db/chroma"
+    persist_path: str = DEFAULT_VECTOR_STORE_PERSIST_PATH
 
 
 @dataclass(slots=True)
@@ -55,6 +60,8 @@ class RerankSettings:
     """Reranker configuration."""
 
     provider: str
+    prompt_path: str = DEFAULT_RERANK_PROMPT_PATH
+    max_candidates: int = DEFAULT_RERANK_MAX_CANDIDATES
 
 
 @dataclass(slots=True)
@@ -119,6 +126,8 @@ def validate_settings(settings: Settings) -> None:
         "vector_store.persist_path": settings.vector_store.persist_path,
         "retrieval.top_k": settings.retrieval.top_k,
         "rerank.provider": settings.rerank.provider,
+        "rerank.prompt_path": settings.rerank.prompt_path,
+        "rerank.max_candidates": settings.rerank.max_candidates,
         "evaluation.backend": settings.evaluation.backend,
         "observability.log_level": settings.observability.log_level,
         "observability.trace_file": settings.observability.trace_file,
@@ -133,6 +142,8 @@ def validate_settings(settings: Settings) -> None:
         raise ValueError("splitter.chunk_overlap must be greater than or equal to 0")
     if settings.splitter.chunk_overlap >= settings.splitter.chunk_size:
         raise ValueError("splitter.chunk_overlap must be smaller than splitter.chunk_size")
+    if settings.rerank.max_candidates <= 0:
+        raise ValueError("rerank.max_candidates must be greater than 0")
 
 
 def load_settings(path: str | Path) -> Settings:
@@ -169,10 +180,14 @@ def load_settings(path: str | Path) -> Settings:
         vector_store=VectorStoreSettings(
             provider=str(_require_value(vector_store, "provider", "vector_store")),
             collection=str(_require_value(vector_store, "collection", "vector_store")),
-            persist_path=str(vector_store.get("persist_path", "data/db/chroma")),
+            persist_path=str(vector_store.get("persist_path", DEFAULT_VECTOR_STORE_PERSIST_PATH)),
         ),
         retrieval=RetrievalSettings(top_k=int(_require_value(retrieval, "top_k", "retrieval"))),
-        rerank=RerankSettings(provider=str(_require_value(rerank, "provider", "rerank"))),
+        rerank=RerankSettings(
+            provider=str(_require_value(rerank, "provider", "rerank")),
+            prompt_path=str(rerank.get("prompt_path", DEFAULT_RERANK_PROMPT_PATH)),
+            max_candidates=int(rerank.get("max_candidates", DEFAULT_RERANK_MAX_CANDIDATES)),
+        ),
         evaluation=EvaluationSettings(backend=str(_require_value(evaluation, "backend", "evaluation"))),
         observability=ObservabilitySettings(
             log_level=str(_require_value(observability, "log_level", "observability")),

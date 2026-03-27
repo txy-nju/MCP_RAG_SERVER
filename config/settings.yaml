@@ -21,6 +21,8 @@ retrieval:
 
 rerank:
   provider: none
+  prompt_path: config/prompts/rerank.txt
+  max_candidates: 20
 
 evaluation:
   backend: custom

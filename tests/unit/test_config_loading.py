@@ -29,6 +29,8 @@ retrieval:
   top_k: 5
 rerank:
   provider: none
+  prompt_path: config/prompts/rerank.txt
+  max_candidates: 20
 evaluation:
   backend: custom
 observability:
@@ -55,6 +57,8 @@ retrieval:
   top_k: 5
 rerank:
   provider: none
+  prompt_path: config/prompts/rerank.txt
+  max_candidates: 20
 evaluation:
   backend: custom
 observability:
@@ -75,6 +79,8 @@ def test_load_settings_returns_settings_object(tmp_path: Path) -> None:
     assert settings.splitter.provider == "recursive"
     assert settings.vector_store.collection == "test"
     assert settings.vector_store.persist_path == "data/db/chroma"
+    assert settings.rerank.prompt_path == "config/prompts/rerank.txt"
+    assert settings.rerank.max_candidates == 20
 
 
 @pytest.mark.unit
@@ -129,3 +135,26 @@ def test_load_settings_defaults_vector_store_persist_path_when_missing(tmp_path:
     settings = load_settings(config_path)
 
     assert settings.vector_store.persist_path == "data/db/chroma"
+
+
+@pytest.mark.unit
+def test_load_settings_defaults_rerank_fields_when_missing(tmp_path: Path) -> None:
+    config_path = tmp_path / "settings.yaml"
+    config_path.write_text(
+        VALID_CONFIG.replace("  prompt_path: config/prompts/rerank.txt\n", "").replace("  max_candidates: 20\n", ""),
+        encoding="utf-8",
+    )
+
+    settings = load_settings(config_path)
+
+    assert settings.rerank.prompt_path == "config/prompts/rerank.txt"
+    assert settings.rerank.max_candidates == 20
+
+
+@pytest.mark.unit
+def test_load_settings_rejects_non_positive_rerank_max_candidates(tmp_path: Path) -> None:
+    config_path = tmp_path / "settings.yaml"
+    config_path.write_text(VALID_CONFIG.replace("max_candidates: 20", "max_candidates: 0"), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="rerank.max_candidates must be greater than 0"):
+        load_settings(config_path)
