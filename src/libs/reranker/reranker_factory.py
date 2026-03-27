@@ -15,6 +15,7 @@ class RerankerFactory:
     """
 
     _providers: dict[str, type[BaseReranker]] = {"none": NoneReranker}
+    _builtin_providers_loaded = False
 
     @classmethod
     def register(cls, provider: str, reranker_cls: type[BaseReranker]) -> None:
@@ -67,6 +68,7 @@ class RerankerFactory:
             registry by provider name.
         """
 
+        cls._ensure_builtin_providers_loaded()
         rerank_settings = cls._extract_rerank_settings(settings)
         provider = rerank_settings.provider.strip().lower()
         reranker_cls = cls._providers.get(provider)
@@ -75,7 +77,20 @@ class RerankerFactory:
             raise ValueError(
                 f"Unsupported reranker provider: {rerank_settings.provider}. Available providers: {available}"
             )
+        if provider == "llm" and isinstance(settings, Settings):
+            return reranker_cls.from_settings(settings)
         return reranker_cls.from_settings(rerank_settings)
+
+    @classmethod
+    def _ensure_builtin_providers_loaded(cls) -> None:
+        """Load built-in reranker modules on first factory use."""
+
+        if cls._builtin_providers_loaded and "llm" in cls._providers:
+            return
+        from libs.reranker.llm_reranker import LLMReranker
+
+        cls.register("llm", LLMReranker)
+        cls._builtin_providers_loaded = True
 
     @staticmethod
     def _extract_rerank_settings(settings: Settings | RerankSettings) -> RerankSettings:

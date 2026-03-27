@@ -54,13 +54,16 @@ def make_candidates() -> list[RerankCandidate]:
 @pytest.fixture(autouse=True)
 def reset_reranker_registry() -> None:
     original = dict(RerankerFactory._providers)
+    original_flag = RerankerFactory._builtin_providers_loaded
     try:
         RerankerFactory._providers.clear()
         RerankerFactory._providers["none"] = NoneReranker
+        RerankerFactory._builtin_providers_loaded = False
         yield
     finally:
         RerankerFactory._providers.clear()
         RerankerFactory._providers.update(original)
+        RerankerFactory._builtin_providers_loaded = original_flag
 
 
 @pytest.mark.unit

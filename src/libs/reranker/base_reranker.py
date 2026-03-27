@@ -30,6 +30,10 @@ class RerankCandidate:
     metadata: dict[str, Any] = field(default_factory=dict)
 
 
+class RerankerFallbackError(RuntimeError):
+    """Signal that the caller should fall back to the original candidate order."""
+
+
 class BaseReranker(ABC):
     """Common contract for all reranker providers used by the project.
 
