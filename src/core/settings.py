@@ -91,6 +91,7 @@ class Settings:
     rerank: RerankSettings
     evaluation: EvaluationSettings
     observability: ObservabilitySettings
+    vision_llm: LLMSettings | None = None
 
 
 def _require_mapping(data: Any, field_path: str) -> dict[str, Any]:
@@ -136,6 +137,12 @@ def validate_settings(settings: Settings) -> None:
         if value in (None, ""):
             raise ValueError(f"Missing required setting: {field_path}")
 
+    if settings.vision_llm is not None:
+        if settings.vision_llm.provider in (None, ""):
+            raise ValueError("Missing required setting: vision_llm.provider")
+        if settings.vision_llm.model in (None, ""):
+            raise ValueError("Missing required setting: vision_llm.model")
+
     if settings.splitter.chunk_size <= 0:
         raise ValueError("splitter.chunk_size must be greater than 0")
     if settings.splitter.chunk_overlap < 0:
@@ -155,6 +162,7 @@ def load_settings(path: str | Path) -> Settings:
 
     root = _require_mapping(raw_data, "settings")
     llm = _require_mapping(root.get("llm"), "llm")
+    vision_llm_raw = root.get("vision_llm")
     embedding = _require_mapping(root.get("embedding"), "embedding")
     splitter = _require_mapping(root.get("splitter"), "splitter")
     vector_store = _require_mapping(root.get("vector_store"), "vector_store")
@@ -162,6 +170,14 @@ def load_settings(path: str | Path) -> Settings:
     rerank = _require_mapping(root.get("rerank"), "rerank")
     evaluation = _require_mapping(root.get("evaluation"), "evaluation")
     observability = _require_mapping(root.get("observability"), "observability")
+
+    vision_llm = None
+    if vision_llm_raw is not None:
+        vision_llm_data = _require_mapping(vision_llm_raw, "vision_llm")
+        vision_llm = LLMSettings(
+            provider=str(_require_value(vision_llm_data, "provider", "vision_llm")),
+            model=str(_require_value(vision_llm_data, "model", "vision_llm")),
+        )
 
     settings = Settings(
         llm=LLMSettings(
@@ -193,6 +209,7 @@ def load_settings(path: str | Path) -> Settings:
             log_level=str(_require_value(observability, "log_level", "observability")),
             trace_file=str(_require_value(observability, "trace_file", "observability")),
         ),
+        vision_llm=vision_llm,
     )
     validate_settings(settings)
     return settings
