@@ -137,7 +137,7 @@ class ChromaStore(BaseVectorStore):
         return cls(
             provider=str(settings.provider),
             collection=str(settings.collection),
-            persist_path=str(getattr(settings, "persist_path", cls.default_persist_path)),
+            persist_path=str(settings.persist_path),
         )
 
     @classmethod

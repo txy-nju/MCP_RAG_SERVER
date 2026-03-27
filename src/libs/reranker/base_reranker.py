@@ -89,7 +89,7 @@ class BaseReranker(ABC):
             settings object.
         """
 
-        model = getattr(settings, "model", None)
+        model = settings.model if hasattr(settings, "model") else None
         return cls(provider=str(settings.provider), model=None if model is None else str(model))
 
 
