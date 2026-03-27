@@ -85,11 +85,13 @@ class RerankerFactory:
     def _ensure_builtin_providers_loaded(cls) -> None:
         """Load built-in reranker modules on first factory use."""
 
-        if cls._builtin_providers_loaded and "llm" in cls._providers:
+        if cls._builtin_providers_loaded and {"llm", "cross_encoder"}.issubset(cls._providers):
             return
+        from libs.reranker.cross_encoder_reranker import CrossEncoderReranker
         from libs.reranker.llm_reranker import LLMReranker
 
         cls.register("llm", LLMReranker)
+        cls.register("cross_encoder", CrossEncoderReranker)
         cls._builtin_providers_loaded = True
 
     @staticmethod
