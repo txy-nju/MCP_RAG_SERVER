@@ -1,10 +1,14 @@
 llm:
-  provider: azure
+  provider: openai
   model: gpt-4o-mini
+  api_key: your-api-key
+  api_url: your-proxy-url
 
 embedding:
   provider: openai
   model: text-embedding-3-small
+  api_key: your-api-key
+  api_url: your-proxy-url
 
 splitter:
   provider: recursive
@@ -30,3 +34,8 @@ evaluation:
 observability:
   log_level: INFO
   trace_file: logs/traces.jsonl
+
+ingestion:
+  chunk_refiner:
+    use_llm: false
+    prompt_path: config/prompts/chunk_refinement.txt

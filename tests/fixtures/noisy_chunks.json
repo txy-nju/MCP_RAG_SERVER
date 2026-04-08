@@ -1,0 +1,10 @@
+{
+  "typical_noise_scenario": "Company Internal\n\nPage 1 / 10\n\nThis document explains system architecture.\n\n---\n\n<!-- footer -->",
+  "ocr_errors": "Th1s d0cument c0nta1ns OCR n01se but keeps key meaning.",
+  "page_header_footer": "Project Handbook\nPage 2\n\nMain content starts here.\n\nPage 2",
+  "excessive_whitespace": "This    sentence\t\tcontains   too    many spaces.\n\n\nAnother line.",
+  "format_markers": "## Title\n\n***\n\nContent with <!-- hidden --> marker.",
+  "clean_text": "This is already clean text and should remain semantically stable.",
+  "code_blocks": "Use this snippet:\n```python\ndef add(a, b):\n    return a + b\n```\n\nPage 3",
+  "mixed_noise": "CONFIDENTIAL\nPage 7 / 20\n\n### Section\n\nData processing pipeline works in batches.\n\n<!-- comment -->\n___"
+}

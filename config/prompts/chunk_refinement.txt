@@ -1,1 +1,4 @@
 Rewrite the chunk to improve retrieval quality while preserving factual meaning.
+
+Chunk text:
+{text}

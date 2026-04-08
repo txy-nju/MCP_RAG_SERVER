@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -12,6 +12,7 @@ import yaml
 DEFAULT_VECTOR_STORE_PERSIST_PATH = "data/db/chroma"
 DEFAULT_RERANK_PROMPT_PATH = "config/prompts/rerank.txt"
 DEFAULT_RERANK_MAX_CANDIDATES = 20
+DEFAULT_CHUNK_REFINER_PROMPT_PATH = "config/prompts/chunk_refinement.txt"
 
 
 @dataclass(slots=True)
@@ -87,6 +88,21 @@ class ObservabilitySettings:
 
 
 @dataclass(slots=True)
+class ChunkRefinerSettings:
+    """Chunk refiner behavior configuration."""
+
+    use_llm: bool = False
+    prompt_path: str = DEFAULT_CHUNK_REFINER_PROMPT_PATH
+
+
+@dataclass(slots=True)
+class IngestionSettings:
+    """Ingestion-stage optional behaviors."""
+
+    chunk_refiner: ChunkRefinerSettings = field(default_factory=ChunkRefinerSettings)
+
+
+@dataclass(slots=True)
 class Settings:
     """Top-level normalized application settings object."""
 
@@ -99,6 +115,7 @@ class Settings:
     evaluation: EvaluationSettings
     observability: ObservabilitySettings
     vision_llm: LLMSettings | None = None
+    ingestion: IngestionSettings = field(default_factory=IngestionSettings)
 
 
 def _require_mapping(data: Any, field_path: str) -> dict[str, Any]:
@@ -130,6 +147,21 @@ def _optional_int(data: dict[str, Any], key: str) -> int | None:
     if value in (None, ""):
         return None
     return int(value)
+
+
+def _optional_bool(data: dict[str, Any], key: str, default: bool = False) -> bool:
+    value = data.get(key, default)
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        normalized = value.strip().lower()
+        if normalized in {"true", "1", "yes", "y", "on"}:
+            return True
+        if normalized in {"false", "0", "no", "n", "off"}:
+            return False
+    if isinstance(value, int):
+        return bool(value)
+    raise ValueError(f"Invalid boolean value for key '{key}': {value!r}")
 
 
 def _build_llm_settings(data: dict[str, Any], field_path: str) -> LLMSettings:
@@ -209,10 +241,24 @@ def load_settings(path: str | Path) -> Settings:
     rerank = _require_mapping(root.get("rerank"), "rerank")
     evaluation = _require_mapping(root.get("evaluation"), "evaluation")
     observability = _require_mapping(root.get("observability"), "observability")
+    ingestion_raw = root.get("ingestion")
 
     vision_llm = None
     if vision_llm_raw is not None:
         vision_llm = _build_llm_settings(_require_mapping(vision_llm_raw, "vision_llm"), "vision_llm")
+
+    ingestion = IngestionSettings()
+    if ingestion_raw is not None:
+        ingestion_map = _require_mapping(ingestion_raw, "ingestion")
+        chunk_refiner_raw = ingestion_map.get("chunk_refiner")
+        if chunk_refiner_raw is not None:
+            chunk_refiner_map = _require_mapping(chunk_refiner_raw, "ingestion.chunk_refiner")
+            ingestion = IngestionSettings(
+                chunk_refiner=ChunkRefinerSettings(
+                    use_llm=_optional_bool(chunk_refiner_map, "use_llm", default=False),
+                    prompt_path=str(chunk_refiner_map.get("prompt_path", DEFAULT_CHUNK_REFINER_PROMPT_PATH)),
+                )
+            )
 
     settings = Settings(
         llm=_build_llm_settings(llm, "llm"),
@@ -242,6 +288,7 @@ def load_settings(path: str | Path) -> Settings:
             trace_file=str(_require_value(observability, "trace_file", "observability")),
         ),
         vision_llm=vision_llm,
+        ingestion=ingestion,
     )
     validate_settings(settings)
     return settings

@@ -1984,7 +1984,7 @@ dashboard:
 | C2 | 文件完整性检查（SHA256） | [x] | 2026-04-08 | FileIntegrityChecker 抽象 + SQLiteIntegrityChecker，WAL 模式，9 个单测通过 |
 | C3 | Loader 抽象基类与 PDF Loader | [x] | 2026-04-08 | BaseLoader + PdfLoader 最小实现（文本/图片占位符/降级），3 个契约测试通过 |
 | C4 | Splitter 集成（调用 Libs） | [x] | 2026-04-08 | DocumentChunker 适配器，6项增值功能，18 个单测通过 |
-| C5 | Transform 基类 + ChunkRefiner | [ ] | | |
+| C5 | Transform 基类 + ChunkRefiner | [x] | 2026-04-08 | Rule+LLM+Fallback ChunkRefiner，TraceContext 最小实现，35个单测通过，2个集成测试通过 |
 | C6 | MetadataEnricher | [ ] | | |
 | C7 | ImageCaptioner | [ ] | | |
 | C8 | DenseEncoder | [ ] | | |
