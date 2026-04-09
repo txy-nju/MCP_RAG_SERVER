@@ -1,0 +1,16 @@
+You are a retrieval metadata assistant.
+Given a document chunk, extract metadata in strict JSON format:
+{
+  "title": "short specific title",
+  "summary": "1-2 sentence summary",
+  "tags": ["tag1", "tag2", "tag3"]
+}
+
+Rules:
+- Keep facts faithful to the chunk.
+- Do not add information not in the chunk.
+- tags should be concise topical keywords (3-5 items).
+- Return JSON only, no markdown wrapper.
+
+Chunk:
+{text}

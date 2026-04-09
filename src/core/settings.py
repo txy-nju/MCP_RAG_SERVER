@@ -13,6 +13,8 @@ DEFAULT_VECTOR_STORE_PERSIST_PATH = "data/db/chroma"
 DEFAULT_RERANK_PROMPT_PATH = "config/prompts/rerank.txt"
 DEFAULT_RERANK_MAX_CANDIDATES = 20
 DEFAULT_CHUNK_REFINER_PROMPT_PATH = "config/prompts/chunk_refinement.txt"
+DEFAULT_METADATA_ENRICHER_PROMPT_PATH = "config/prompts/metadata_enrichment.txt"
+DEFAULT_METADATA_ENRICHER_MAX_TAGS = 5
 
 
 @dataclass(slots=True)
@@ -96,10 +98,20 @@ class ChunkRefinerSettings:
 
 
 @dataclass(slots=True)
+class MetadataEnricherSettings:
+    """Metadata enricher behavior configuration."""
+
+    use_llm: bool = False
+    prompt_path: str = DEFAULT_METADATA_ENRICHER_PROMPT_PATH
+    max_tags: int = DEFAULT_METADATA_ENRICHER_MAX_TAGS
+
+
+@dataclass(slots=True)
 class IngestionSettings:
     """Ingestion-stage optional behaviors."""
 
     chunk_refiner: ChunkRefinerSettings = field(default_factory=ChunkRefinerSettings)
+    metadata_enricher: MetadataEnricherSettings = field(default_factory=MetadataEnricherSettings)
 
 
 @dataclass(slots=True)
@@ -222,6 +234,8 @@ def validate_settings(settings: Settings) -> None:
         raise ValueError("splitter.chunk_overlap must be smaller than splitter.chunk_size")
     if settings.rerank.max_candidates <= 0:
         raise ValueError("rerank.max_candidates must be greater than 0")
+    if settings.ingestion.metadata_enricher.max_tags <= 0:
+        raise ValueError("ingestion.metadata_enricher.max_tags must be greater than 0")
 
 
 def load_settings(path: str | Path) -> Settings:
@@ -251,14 +265,31 @@ def load_settings(path: str | Path) -> Settings:
     if ingestion_raw is not None:
         ingestion_map = _require_mapping(ingestion_raw, "ingestion")
         chunk_refiner_raw = ingestion_map.get("chunk_refiner")
+        metadata_enricher_raw = ingestion_map.get("metadata_enricher")
+
+        chunk_refiner = ChunkRefinerSettings()
         if chunk_refiner_raw is not None:
             chunk_refiner_map = _require_mapping(chunk_refiner_raw, "ingestion.chunk_refiner")
-            ingestion = IngestionSettings(
-                chunk_refiner=ChunkRefinerSettings(
-                    use_llm=_optional_bool(chunk_refiner_map, "use_llm", default=False),
-                    prompt_path=str(chunk_refiner_map.get("prompt_path", DEFAULT_CHUNK_REFINER_PROMPT_PATH)),
-                )
+            chunk_refiner = ChunkRefinerSettings(
+                use_llm=_optional_bool(chunk_refiner_map, "use_llm", default=False),
+                prompt_path=str(chunk_refiner_map.get("prompt_path", DEFAULT_CHUNK_REFINER_PROMPT_PATH)),
             )
+
+        metadata_enricher = MetadataEnricherSettings()
+        if metadata_enricher_raw is not None:
+            metadata_enricher_map = _require_mapping(metadata_enricher_raw, "ingestion.metadata_enricher")
+            metadata_enricher = MetadataEnricherSettings(
+                use_llm=_optional_bool(metadata_enricher_map, "use_llm", default=False),
+                prompt_path=str(
+                    metadata_enricher_map.get("prompt_path", DEFAULT_METADATA_ENRICHER_PROMPT_PATH)
+                ),
+                max_tags=int(metadata_enricher_map.get("max_tags", DEFAULT_METADATA_ENRICHER_MAX_TAGS)),
+            )
+
+        ingestion = IngestionSettings(
+            chunk_refiner=chunk_refiner,
+            metadata_enricher=metadata_enricher,
+        )
 
     settings = Settings(
         llm=_build_llm_settings(llm, "llm"),
