@@ -15,6 +15,7 @@ DEFAULT_RERANK_MAX_CANDIDATES = 20
 DEFAULT_CHUNK_REFINER_PROMPT_PATH = "config/prompts/chunk_refinement.txt"
 DEFAULT_METADATA_ENRICHER_PROMPT_PATH = "config/prompts/metadata_enrichment.txt"
 DEFAULT_METADATA_ENRICHER_MAX_TAGS = 5
+DEFAULT_IMAGE_CAPTIONER_PROMPT_PATH = "config/prompts/image_captioning.txt"
 
 
 @dataclass(slots=True)
@@ -107,11 +108,20 @@ class MetadataEnricherSettings:
 
 
 @dataclass(slots=True)
+class ImageCaptionerSettings:
+    """Image captioner behavior configuration."""
+
+    use_vision_llm: bool = False
+    prompt_path: str = DEFAULT_IMAGE_CAPTIONER_PROMPT_PATH
+
+
+@dataclass(slots=True)
 class IngestionSettings:
     """Ingestion-stage optional behaviors."""
 
     chunk_refiner: ChunkRefinerSettings = field(default_factory=ChunkRefinerSettings)
     metadata_enricher: MetadataEnricherSettings = field(default_factory=MetadataEnricherSettings)
+    image_captioner: ImageCaptionerSettings = field(default_factory=ImageCaptionerSettings)
 
 
 @dataclass(slots=True)
@@ -266,6 +276,7 @@ def load_settings(path: str | Path) -> Settings:
         ingestion_map = _require_mapping(ingestion_raw, "ingestion")
         chunk_refiner_raw = ingestion_map.get("chunk_refiner")
         metadata_enricher_raw = ingestion_map.get("metadata_enricher")
+        image_captioner_raw = ingestion_map.get("image_captioner")
 
         chunk_refiner = ChunkRefinerSettings()
         if chunk_refiner_raw is not None:
@@ -286,9 +297,18 @@ def load_settings(path: str | Path) -> Settings:
                 max_tags=int(metadata_enricher_map.get("max_tags", DEFAULT_METADATA_ENRICHER_MAX_TAGS)),
             )
 
+        image_captioner = ImageCaptionerSettings()
+        if image_captioner_raw is not None:
+            image_captioner_map = _require_mapping(image_captioner_raw, "ingestion.image_captioner")
+            image_captioner = ImageCaptionerSettings(
+                use_vision_llm=_optional_bool(image_captioner_map, "use_vision_llm", default=False),
+                prompt_path=str(image_captioner_map.get("prompt_path", DEFAULT_IMAGE_CAPTIONER_PROMPT_PATH)),
+            )
+
         ingestion = IngestionSettings(
             chunk_refiner=chunk_refiner,
             metadata_enricher=metadata_enricher,
+            image_captioner=image_captioner,
         )
 
     settings = Settings(

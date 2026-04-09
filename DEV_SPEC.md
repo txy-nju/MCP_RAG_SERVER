@@ -1986,7 +1986,7 @@ dashboard:
 | C4 | Splitter 集成（调用 Libs） | [x] | 2026-04-08 | DocumentChunker 适配器，6项增值功能，18 个单测通过 |
 | C5 | Transform 基类 + ChunkRefiner | [x] | 2026-04-08 | Rule+LLM+Fallback ChunkRefiner，TraceContext 最小实现，35个单测通过，2个集成测试通过 |
 | C6 | MetadataEnricher | [x] | 2026-04-09 | 规则+LLM+Fallback 元数据增强实现，新增单测与集成测试 |
-| C7 | ImageCaptioner | [ ] | | |
+| C7 | ImageCaptioner | [x] | 2026-04-09 | Vision LLM caption + fallback 不阻塞实现，新增单元测试 |
 | C8 | DenseEncoder | [ ] | | |
 | C9 | SparseEncoder | [ ] | | |
 | C10 | BatchProcessor | [ ] | | |

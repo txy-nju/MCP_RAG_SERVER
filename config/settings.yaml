@@ -43,3 +43,6 @@ ingestion:
     use_llm: false
     prompt_path: config/prompts/metadata_enrichment.txt
     max_tags: 5
+  image_captioner:
+    use_vision_llm: false
+    prompt_path: config/prompts/image_captioning.txt
