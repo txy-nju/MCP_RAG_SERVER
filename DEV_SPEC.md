@@ -1988,7 +1988,7 @@ dashboard:
 | C6 | MetadataEnricher | [x] | 2026-04-09 | 规则+LLM+Fallback 元数据增强实现，新增单测与集成测试 |
 | C7 | ImageCaptioner | [x] | 2026-04-09 | Vision LLM caption + fallback 不阻塞实现，新增单元测试 |
 | C8 | DenseEncoder | [x] | 2026-04-09 | 批量编码 chunks，BaseEmbedding 集成，9 个单元测试通过 |
-| C9 | SparseEncoder | [ ] | | |
+| C9 | SparseEncoder | [x] | 2026-04-09 | BM25 TF 稀疏向量编码，CJK/ASCII 分词，停用词过滤，18 个单测通过 |
 | C10 | BatchProcessor | [ ] | | |
 | C11 | BM25Indexer（倒排索引+IDF计算） | [ ] | | |
 | C12 | VectorUpserter（幂等upsert） | [ ] | | |
