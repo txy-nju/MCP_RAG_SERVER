@@ -83,7 +83,7 @@
 | C11 | BM25Indexer（倒排索引+IDF计算） | [x] | 2026-04-09 | BM25 索引构建/持久化/回读/查询与增量更新，7 个单测通过 |
 | C12 | VectorUpserter（幂等upsert） | [x] | 2026-04-10 | 确定性 chunk_id + 向量库幂等 upsert，4 个单测通过 |
 | C13 | ImageStorage（图片存储+SQLite索引） | [x] | 2026-04-10 | 图片落盘 + SQLite 映射索引(WAL) + collection 查询，5 个单测通过 |
-| C14 | Pipeline 编排（MVP 串起来） | [ ] | | |
+| C14 | Pipeline 编排（MVP 串起来） | [x] | 2026-04-10 | IngestionPipeline 串联完整阶段并新增集成测试 |
 | C15 | 脚本入口 ingest.py | [ ] | | |
 
 #### 阶段 D：Retrieval MVP
