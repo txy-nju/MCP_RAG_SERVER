@@ -1991,7 +1991,7 @@ dashboard:
 | C9 | SparseEncoder | [x] | 2026-04-09 | BM25 TF 稀疏向量编码，CJK/ASCII 分词，停用词过滤，18 个单测通过 |
 | C10 | BatchProcessor | [x] | 2026-04-09 | 分批驱动 dense+sparse 编码并合并，顺序稳定，9 个单测通过 |
 | C11 | BM25Indexer（倒排索引+IDF计算） | [x] | 2026-04-09 | BM25 索引构建/持久化/回读/查询与增量更新，7 个单测通过 |
-| C12 | VectorUpserter（幂等upsert） | [ ] | | |
+| C12 | VectorUpserter（幂等upsert） | [x] | 2026-04-10 | 确定性 chunk_id + 向量库幂等 upsert，4 个单测通过 |
 | C13 | ImageStorage（图片存储+SQLite索引） | [ ] | | |
 | C14 | Pipeline 编排（MVP 串起来） | [ ] | | |
 | C15 | 脚本入口 ingest.py | [ ] | | |
