@@ -41,6 +41,10 @@ class FakeVectorStore(BaseVectorStore):
         del vector, top_k, filters, trace
         return []
 
+    def get_by_ids(self, ids: list[str], trace: object | None = None) -> list[object]:
+        del ids, trace
+        return []
+
 
 def _make_settings() -> Settings:
     return Settings(

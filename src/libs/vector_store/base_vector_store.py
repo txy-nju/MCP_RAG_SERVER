@@ -53,6 +53,14 @@ class BaseVectorStore(ABC):
     ) -> list[VectorStoreQueryResult]:
         """Search for the nearest vector records matching the supplied query."""
 
+    @abstractmethod
+    def get_by_ids(
+        self,
+        ids: list[str],
+        trace: TraceContext | None = None,
+    ) -> list[VectorStoreQueryResult]:
+        """Fetch stored records by id while preserving retrievable text and metadata."""
+
     @classmethod
     def from_settings(cls, settings: Any) -> "BaseVectorStore":
         """Build a vector store instance from a vector-store settings object."""

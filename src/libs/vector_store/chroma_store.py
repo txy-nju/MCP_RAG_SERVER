@@ -121,6 +121,36 @@ class ChromaStore(BaseVectorStore):
             )
         return results
 
+    def get_by_ids(
+        self,
+        ids: list[str],
+        trace: TraceContext | None = None,
+    ) -> list[VectorStoreQueryResult]:
+        """Fetch Chroma documents by id while preserving caller order."""
+
+        del trace
+        if not ids:
+            return []
+        normalized_ids = [str(record_id).strip() for record_id in ids if str(record_id).strip()]
+        if not normalized_ids:
+            return []
+
+        payload = self._collection.get(ids=normalized_ids, include=["documents", "metadatas"])
+        result_ids = payload.get("ids", [])
+        documents = payload.get("documents", [])
+        metadatas = payload.get("metadatas", [])
+
+        by_id: dict[str, VectorStoreQueryResult] = {}
+        for record_id, document, metadata in zip(result_ids, documents, metadatas, strict=False):
+            by_id[str(record_id)] = VectorStoreQueryResult(
+                id=str(record_id),
+                score=0.0,
+                text=document,
+                metadata=dict(metadata or {}),
+            )
+
+        return [by_id[record_id] for record_id in normalized_ids if record_id in by_id]
+
     @classmethod
     def from_settings(cls, settings: Any) -> "ChromaStore":
         """Build a Chroma store from vector-store settings.

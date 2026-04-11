@@ -2002,7 +2002,7 @@ dashboard:
 |---------|---------|------|---------|------|
 | D1 | QueryProcessor（关键词提取 + filters） | [x] | 2026-04-11 | 规则分词关键词提取 + 内联/显式 filters 合并，新增4个单元测试 |
 | D2 | DenseRetriever（调用 VectorStore.query） | [x] | 2026-04-11 | 完成 embedding+vector_store 编排、结果标准化，新增4个单元测试 |
-| D3 | SparseRetriever（BM25 查询） | [ ] | | |
+| D3 | SparseRetriever（BM25 查询） | [x] | 2026-04-11 | 完成 BM25 查询 + vector_store.get_by_ids 回查正文/metadata，新增4个单元测试 |
 | D4 | RRF Fusion | [ ] | | |
 | D5 | HybridSearch 编排 | [ ] | | |
 | D6 | Reranker（Core 层编排 + Fallback） | [ ] | | |

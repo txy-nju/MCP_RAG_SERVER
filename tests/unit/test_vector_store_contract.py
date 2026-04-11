@@ -46,6 +46,20 @@ class FakeVectorStore(BaseVectorStore):
             for index, record in enumerate(self.records[:top_k])
         ]
 
+    def get_by_ids(self, ids: list[str], trace: object | None = None) -> list[VectorStoreQueryResult]:
+        del trace
+        by_id = {record.id: record for record in self.records}
+        return [
+            VectorStoreQueryResult(
+                id=by_id[record_id].id,
+                score=0.0,
+                text=by_id[record_id].text,
+                metadata=dict(by_id[record_id].metadata),
+            )
+            for record_id in ids
+            if record_id in by_id
+        ]
+
 
 def make_settings(provider: str = "fake", collection: str = "demo") -> Settings:
     return Settings(
