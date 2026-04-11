@@ -2006,7 +2006,7 @@ dashboard:
 | D4 | RRF Fusion | [x] | 2026-04-11 | 完成 RRFFuser 融合实现，新增5个单元测试覆盖融合排序与参数校验 |
 | D5 | HybridSearch 编排 | [x] | 2026-04-11 | 完成 QueryProcessor→Dense/Sparse→RRF 编排、后置 metadata 过滤与单路降级，新增4个集成测试 |
 | D6 | Reranker（Core 层编排 + Fallback） | [x] | 2026-04-11 | 完成 RetrievalResult↔RerankCandidate 转换、3类异常处理、fallback 标记，新增10个单元测试 |
-| D7 | 脚本入口 query.py（查询可用） | [ ] | | |
+| D7 | 脚本入口 query.py（查询可用） | [x] | 2026-04-11 | 完成 HybridSearch+Reranker CLI 编排、参数支持（--query/--top-k/--collection/--verbose/--no-rerank）、友好输出，新增15个集成测试 |
 
 #### 阶段 E：MCP Server 层与 Tools
 
