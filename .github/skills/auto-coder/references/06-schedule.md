@@ -84,16 +84,16 @@
 | C12 | VectorUpserter（幂等upsert） | [x] | 2026-04-10 | 确定性 chunk_id + 向量库幂等 upsert，4 个单测通过 |
 | C13 | ImageStorage（图片存储+SQLite索引） | [x] | 2026-04-10 | 图片落盘 + SQLite 映射索引(WAL) + collection 查询，5 个单测通过 |
 | C14 | Pipeline 编排（MVP 串起来） | [x] | 2026-04-10 | IngestionPipeline 串联完整阶段并新增集成测试 |
-| C15 | 脚本入口 ingest.py | [ ] | | |
+| C15 | 脚本入口 ingest.py | [x] | 2026-04-11 | 完成 CLI 参数解析与目录批量摄取，新增 e2e 测试覆盖首次摄取/重复跳过/force 重跑 |
 
 #### 阶段 D：Retrieval MVP
 
 | 任务编号 | 任务名称 | 状态 | 完成日期 | 备注 |
 |---------|---------|------|---------|------|
-| D1 | QueryProcessor（关键词提取 + filters） | [ ] | | |
-| D2 | DenseRetriever（调用 VectorStore.query） | [ ] | | |
-| D3 | SparseRetriever（BM25 查询） | [ ] | | |
-| D4 | RRF Fusion | [ ] | | |
+| D1 | QueryProcessor（关键词提取 + filters） | [x] | 2026-04-11 | 规则分词关键词提取 + 内联/显式 filters 合并，新增4个单元测试 |
+| D2 | DenseRetriever（调用 VectorStore.query） | [x] | 2026-04-11 | 完成 embedding+vector_store 编排、结果标准化，新增4个单元测试 |
+| D3 | SparseRetriever（BM25 查询） | [x] | 2026-04-11 | 完成 BM25 查询 + vector_store.get_by_ids 回查正文/metadata，新增4个单元测试 |
+| D4 | RRF Fusion | [x] | 2026-04-11 | 完成 RRFFuser 融合实现，新增5个单元测试覆盖融合排序与参数校验 |
 | D5 | HybridSearch 编排 | [ ] | | |
 | D6 | Reranker（Core 层编排 + Fallback） | [ ] | | |
 | D7 | 脚本入口 query.py（查询可用） | [ ] | | |
