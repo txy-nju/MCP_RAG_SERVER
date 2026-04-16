@@ -94,15 +94,15 @@
 | D2 | DenseRetriever（调用 VectorStore.query） | [x] | 2026-04-11 | 完成 embedding+vector_store 编排、结果标准化，新增4个单元测试 |
 | D3 | SparseRetriever（BM25 查询） | [x] | 2026-04-11 | 完成 BM25 查询 + vector_store.get_by_ids 回查正文/metadata，新增4个单元测试 |
 | D4 | RRF Fusion | [x] | 2026-04-11 | 完成 RRFFuser 融合实现，新增5个单元测试覆盖融合排序与参数校验 |
-| D5 | HybridSearch 编排 | [ ] | | |
-| D6 | Reranker（Core 层编排 + Fallback） | [ ] | | |
-| D7 | 脚本入口 query.py（查询可用） | [ ] | | |
+| D5 | HybridSearch 编排 | [x] | 2026-04-11 | 完成 QueryProcessor→Dense/Sparse→RRF 编排、后置 metadata 过滤与单路降级，新增4个集成测试 |
+| D6 | Reranker（Core 层编排 + Fallback） | [x] | 2026-04-11 | 完成 RetrievalResult↔RerankCandidate 转换、3类异常处理、fallback 标记，新增10个单元测试 |
+| D7 | 脚本入口 query.py（查询可用） | [x] | 2026-04-11 | 完成 HybridSearch+Reranker CLI 编排、参数支持（--query/--top-k/--collection/--verbose/--no-rerank）、友好输出，新增15个集成测试 |
 
 #### 阶段 E：MCP Server 层与 Tools
 
 | 任务编号 | 任务名称 | 状态 | 完成日期 | 备注 |
 |---------|---------|------|---------|------|
-| E1 | MCP Server 入口与 Stdio 约束 | [ ] | | |
+| E1 | MCP Server 入口与 Stdio 约束 | [x] | 2026-04-15 | 完成 stdio server initialize、stdout 无日志污染校验，新增 test_mcp_server 集成测试 |
 | E2 | Protocol Handler 协议解析与能力协商 | [ ] | | |
 | E3 | query_knowledge_hub Tool | [ ] | | |
 | E4 | list_collections Tool | [ ] | | |
