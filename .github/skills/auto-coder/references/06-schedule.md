@@ -103,7 +103,7 @@
 | 任务编号 | 任务名称 | 状态 | 完成日期 | 备注 |
 |---------|---------|------|---------|------|
 | E1 | MCP Server 入口与 Stdio 约束 | [x] | 2026-04-15 | 完成 stdio server initialize、stdout 无日志污染校验，新增 test_mcp_server 集成测试 |
-| E2 | Protocol Handler 协议解析与能力协商 | [ ] | | |
+| E2 | Protocol Handler 协议解析与能力协商 | [x] | 2026-04-16 | 完成 initialize/tools/list/tools/call 路由、JSON-RPC 标准错误映射与 test_protocol_handler 单测 |
 | E3 | query_knowledge_hub Tool | [ ] | | |
 | E4 | list_collections Tool | [ ] | | |
 | E5 | get_document_summary Tool | [ ] | | |
