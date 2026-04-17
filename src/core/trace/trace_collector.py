@@ -6,6 +6,7 @@ from collections.abc import Callable
 from typing import Any
 
 from core.trace.trace_context import TraceContext
+from observability.logger import write_trace
 
 
 class TraceCollector:
@@ -16,7 +17,7 @@ class TraceCollector:
 		*,
 		writer: Callable[[dict[str, Any]], None] | None = None,
 	) -> None:
-		self._writer = writer
+		self._writer = writer or write_trace
 		self._collected: list[dict[str, Any]] = []
 
 	def collect(self, trace: TraceContext) -> None:
