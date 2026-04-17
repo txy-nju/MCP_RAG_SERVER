@@ -2015,7 +2015,7 @@ dashboard:
 | E1 | MCP Server 入口与 Stdio 约束 | [x] | 2026-04-15 | 完成 stdio server initialize、stdout 无日志污染校验，新增 test_mcp_server 集成测试 |
 | E2 | Protocol Handler 协议解析与能力协商 | [x] | 2026-04-16 | 完成 initialize/tools/list/tools/call 路由、JSON-RPC 标准错误映射与 test_protocol_handler 单测 |
 | E3 | query_knowledge_hub Tool | [x] | 2026-04-16 | 完成 HybridSearch+Reranker 调用与 citations MCP 返回 |
-| E4 | list_collections Tool | [ ] | | |
+| E4 | list_collections Tool | [x] | 2026-04-17 | 完成 data/documents 集合发现与文档计数统计，新增 test_list_collections 单测 |
 | E5 | get_document_summary Tool | [ ] | | |
 | E6 | 多模态返回组装（Text + Image） | [ ] | | |
 

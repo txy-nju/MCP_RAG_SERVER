@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Callable
 
+from mcp_server.tools.list_collections import build_list_collections_tool_handler
 from mcp_server.tools.query_knowledge_hub import build_query_tool_handler
 
 
@@ -85,7 +86,7 @@ class ProtocolHandler:
 					"type": "object",
 					"properties": {},
 				},
-				handler=_placeholder_tool,
+				handler=build_list_collections_tool_handler(),
 			),
 			ToolDefinition(
 				name="get_document_summary",
