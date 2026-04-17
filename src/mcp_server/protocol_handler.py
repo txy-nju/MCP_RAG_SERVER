@@ -5,6 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Callable
 
+from mcp_server.tools.query_knowledge_hub import build_query_tool_handler
+
 
 JSONRPC_VERSION = "2.0"
 PROTOCOL_VERSION = "2025-06-18"
@@ -74,7 +76,7 @@ class ProtocolHandler:
 					},
 					"required": ["query"],
 				},
-				handler=_placeholder_tool,
+				handler=build_query_tool_handler(),
 			),
 			ToolDefinition(
 				name="list_collections",
@@ -145,6 +147,8 @@ class ProtocolHandler:
 			if not isinstance(result, dict):
 				raise JsonRpcError(-32603, "Internal error")
 			return result
+		except (ValueError, TypeError) as exc:
+			raise JsonRpcError(-32602, "Invalid params") from exc
 		except JsonRpcError:
 			raise
 		except Exception as exc:  # pragma: no cover - covered through handle_request mapping

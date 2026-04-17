@@ -7,8 +7,13 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
+
+from core.query_engine.reranker import RerankResult
+from core.types import RetrievalResult
+from mcp_server.protocol_handler import ProtocolHandler
 
 
 @pytest.mark.integration
@@ -58,3 +63,58 @@ def test_mcp_server_initialize_over_stdio_without_stdout_pollution() -> None:
 	# stdout should only contain JSON-RPC payloads, never human-readable logs.
 	assert "MCP server started" not in stdout
 	assert "MCP server started" in stderr
+
+
+@pytest.mark.integration
+def test_query_knowledge_hub_tool_returns_markdown_and_citations(monkeypatch: pytest.MonkeyPatch) -> None:
+	"""Protocol handler should route query_knowledge_hub and return cited MCP payload."""
+
+	settings_stub = SimpleNamespace(retrieval=SimpleNamespace(top_k=3))
+
+	class FakeHybridSearch:
+		def search(self, query: str, top_k: int, filters: dict[str, object] | None = None) -> list[RetrievalResult]:
+			assert query == "如何配置 Azure OpenAI"
+			assert top_k == 2
+			assert filters == {"collection": "default"}
+			return [
+				RetrievalResult(
+					chunk_id="c1",
+					score=0.9,
+					text="在 settings.yaml 中设置 llm.provider 和 llm.model。",
+					metadata={"source_path": "docs/setup.md", "page": 2},
+				)
+			]
+
+	class FakeReranker:
+		def rerank(self, query: str, candidates: list[RetrievalResult]) -> RerankResult:
+			return RerankResult(candidates=candidates, fallback=False)
+
+	monkeypatch.setattr("mcp_server.tools.query_knowledge_hub.load_settings", lambda _path: settings_stub)
+	monkeypatch.setattr(
+		"mcp_server.tools.query_knowledge_hub._build_components",
+		lambda _settings: (FakeHybridSearch(), FakeReranker()),
+	)
+
+	handler = ProtocolHandler()
+	response = handler.handle_request(
+		{
+			"jsonrpc": "2.0",
+			"id": 99,
+			"method": "tools/call",
+			"params": {
+				"name": "query_knowledge_hub",
+				"arguments": {
+					"query": "如何配置 Azure OpenAI",
+					"top_k": 2,
+					"collection": "default",
+				},
+			},
+		}
+	)
+
+	assert "error" not in response
+	result = response["result"]
+	assert result["content"][0]["type"] == "text"
+	assert "[1]" in result["content"][0]["text"]
+	assert result["structuredContent"]["citations"][0]["source"] == "docs/setup.md"
+	assert result["structuredContent"]["citations"][0]["chunk_id"] == "c1"
