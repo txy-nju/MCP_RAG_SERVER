@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from core.response.citation_generator import CitationGenerator
+from core.response.multimodal_assembler import MultimodalAssembler
 from core.types import RetrievalResult
 
 
@@ -14,6 +15,7 @@ class ResponseBuilder:
 	"""Construct MCP-compliant response payloads with markdown and citations."""
 
 	citation_generator: CitationGenerator = field(default_factory=CitationGenerator)
+	multimodal_assembler: MultimodalAssembler = field(default_factory=MultimodalAssembler)
 
 	def build(
 		self,
@@ -61,16 +63,20 @@ class ResponseBuilder:
 		if fallback_reason:
 			markdown_lines.append(f"\n> 注：已触发重排回退，原因：{fallback_reason}")
 
+		image_contents, structured_images = self.multimodal_assembler.assemble(retrieval_results)
+
 		structured_content: dict[str, Any] = {
 			"query": normalized_query,
 			"citations": citations,
 			"results": structured_results,
 		}
+		if structured_images:
+			structured_content["images"] = structured_images
 		if fallback_reason:
 			structured_content["reranker_fallback_reason"] = fallback_reason
 
 		return {
-			"content": [{"type": "text", "text": "\n".join(markdown_lines)}],
+			"content": [{"type": "text", "text": "\n".join(markdown_lines)}, *image_contents],
 			"structuredContent": structured_content,
 		}
 

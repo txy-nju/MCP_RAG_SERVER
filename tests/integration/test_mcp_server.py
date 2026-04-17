@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import base64
 import json
 import os
 import subprocess
@@ -118,3 +119,71 @@ def test_query_knowledge_hub_tool_returns_markdown_and_citations(monkeypatch: py
 	assert "[1]" in result["content"][0]["text"]
 	assert result["structuredContent"]["citations"][0]["source"] == "docs/setup.md"
 	assert result["structuredContent"]["citations"][0]["chunk_id"] == "c1"
+
+
+@pytest.mark.integration
+def test_query_knowledge_hub_returns_image_content_when_chunk_has_image_refs(
+	monkeypatch: pytest.MonkeyPatch,
+	tmp_path: Path,
+) -> None:
+	"""When retrieval metadata includes image refs, response should include MCP ImageContent."""
+
+	settings_stub = SimpleNamespace(retrieval=SimpleNamespace(top_k=3))
+	image_path = tmp_path / "img-1.png"
+	image_path.write_bytes(base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO6n5mQAAAAASUVORK5CYII="))
+
+	class FakeHybridSearch:
+		def search(self, query: str, top_k: int, filters: dict[str, object] | None = None) -> list[RetrievalResult]:
+			assert query == "embedded image document with images"
+			assert top_k == 1
+			assert filters == {"collection": "default"}
+			return [
+				RetrievalResult(
+					chunk_id="c-image-1",
+					score=0.88,
+					text="This chunk includes a referenced image.",
+					metadata={
+						"source_path": "fixtures/with_images.pdf",
+						"page": 1,
+						"image_refs": ["img-1"],
+						"images": [{"id": "img-1", "path": str(image_path), "text_offset": 0, "text_length": 0}],
+					},
+				)
+			]
+
+	class FakeReranker:
+		def rerank(self, query: str, candidates: list[RetrievalResult]) -> RerankResult:
+			return RerankResult(candidates=candidates, fallback=False)
+
+	monkeypatch.setattr("mcp_server.tools.query_knowledge_hub.load_settings", lambda _path: settings_stub)
+	monkeypatch.setattr(
+		"mcp_server.tools.query_knowledge_hub._build_components",
+		lambda _settings: (FakeHybridSearch(), FakeReranker()),
+	)
+
+	handler = ProtocolHandler()
+	response = handler.handle_request(
+		{
+			"jsonrpc": "2.0",
+			"id": 100,
+			"method": "tools/call",
+			"params": {
+				"name": "query_knowledge_hub",
+				"arguments": {
+					"query": "embedded image document with images",
+					"top_k": 1,
+					"collection": "default",
+				},
+			},
+		}
+	)
+
+	assert "error" not in response
+	content = response["result"]["content"]
+	assert content[0]["type"] == "text"
+	assert any(item.get("type") == "image" for item in content)
+
+	image_item = next(item for item in content if item.get("type") == "image")
+	assert image_item["mimeType"] == "image/png"
+	assert isinstance(image_item["data"], str) and image_item["data"]
+	assert isinstance(base64.b64decode(image_item["data"]), bytes)

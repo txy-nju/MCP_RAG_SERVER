@@ -107,7 +107,7 @@
 | E3 | query_knowledge_hub Tool | [x] | 2026-04-16 | 完成 HybridSearch+Reranker 调用与 citations MCP 返回 |
 | E4 | list_collections Tool | [x] | 2026-04-17 | 完成 data/documents 集合发现与文档计数统计，新增 test_list_collections 单测 |
 | E5 | get_document_summary Tool | [x] | 2026-04-17 | 完成按 doc_id 解析 title/summary/tags 并返回 MCP 结构化结果，新增 test_get_document_summary 单测 |
-| E6 | 多模态返回组装（Text + Image） | [ ] | | |
+| E6 | 多模态返回组装（Text + Image） | [x] | 2026-04-17 | 完成 image_refs→ImageContent(base64) 组装并接入 ResponseBuilder，新增 mcp_server 图像集成测试 |
 
 #### 阶段 F：Trace 基础设施与打点
 
