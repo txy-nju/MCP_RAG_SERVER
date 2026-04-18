@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import cast
 
 import pytest
 
@@ -19,9 +20,15 @@ from core.settings import (
 )
 from core.trace.trace_context import TraceContext
 from core.types import Chunk, ChunkRecord, Document
+from ingestion.chunking.document_chunker import DocumentChunker
+from ingestion.embedding.batch_processor import BatchProcessor
 from ingestion.pipeline import IngestionPipeline, IngestionPipelineError
 from ingestion.storage.bm25_indexer import BM25Indexer
 from ingestion.storage.image_storage import ImageStorage
+from ingestion.storage.vector_upserter import VectorUpserter
+from ingestion.transform.base_transform import BaseTransform
+from libs.loader.base_loader import BaseLoader
+from libs.loader.file_integrity import FileIntegrityChecker
 
 
 class FakeIntegrityChecker:
@@ -153,22 +160,24 @@ def test_ingestion_pipeline_runs_full_flow_and_persists_outputs(tmp_path: Path) 
 
     pipeline = IngestionPipeline(
         _make_settings(),
-        integrity_checker=integrity,
-        loader=loader,
-        chunker=chunker,
-        transforms=[FakeTransform()],
-        batch_processor=batch,
-        vector_upserter=upserter,
+        integrity_checker=cast(FileIntegrityChecker, integrity),
+        loader=cast(BaseLoader, loader),
+        chunker=cast(DocumentChunker, chunker),
+        transforms=cast(list[BaseTransform], [FakeTransform()]),
+        batch_processor=cast(BatchProcessor, batch),
+        vector_upserter=cast(VectorUpserter, upserter),
         bm25_indexer=bm25,
         image_storage=image_storage,
     )
 
     progress_events: list[tuple[str, int, int]] = []
+    def on_progress(stage_name: str, current: int, total: int) -> None:
+        progress_events.append((stage_name, current, total))
+
     result = pipeline.run(
         str(source_file),
         collection="demo",
-        trace=TraceContext(trace_type="ingestion-test"),
-        on_progress=lambda stage, current, total: progress_events.append((stage, current, total)),
+        on_progress=on_progress,
     )
 
     assert result.skipped is False
@@ -188,11 +197,28 @@ def test_ingestion_pipeline_runs_full_flow_and_persists_outputs(tmp_path: Path) 
         "load",
         "split",
         "transform",
-        "encode",
-        "store",
+        "embed",
+        "upsert",
     ]
     assert [event[1] for event in progress_events] == [1, 2, 3, 4, 5, 6]
     assert all(total == 6 for _, _, total in progress_events)
+
+    assert result.trace is not None
+    trace = result.trace
+    assert trace.trace_type == "ingestion"
+
+    stage_names = [item["stage"] for item in trace.stages]
+    for required in ["load", "split", "transform", "embed", "upsert"]:
+        assert required in stage_names
+
+    for stage in trace.stages:
+        assert "elapsed_ms" in stage
+        assert isinstance(stage["elapsed_ms"], float)
+        assert "method" in stage["data"]
+        assert "details" in stage["data"]
+
+    trace_payload = trace.to_dict()
+    assert trace_payload["trace_type"] == "ingestion"
 
 
 @pytest.mark.integration
@@ -205,20 +231,23 @@ def test_ingestion_pipeline_skips_unchanged_file_when_not_forced(tmp_path: Path)
 
     pipeline = IngestionPipeline(
         _make_settings(),
-        integrity_checker=integrity,
-        loader=loader,
-        chunker=FakeChunker(),
-        transforms=[FakeTransform()],
-        batch_processor=FakeBatchProcessor(),
-        vector_upserter=FakeVectorUpserter(),
+        integrity_checker=cast(FileIntegrityChecker, integrity),
+        loader=cast(BaseLoader, loader),
+        chunker=cast(DocumentChunker, FakeChunker()),
+        transforms=cast(list[BaseTransform], [FakeTransform()]),
+        batch_processor=cast(BatchProcessor, FakeBatchProcessor()),
+        vector_upserter=cast(VectorUpserter, FakeVectorUpserter()),
         bm25_indexer=BM25Indexer(index_dir=tmp_path / "bm25"),
         image_storage=ImageStorage(image_root=tmp_path / "images", db_path=tmp_path / "image_index.db"),
     )
 
     progress_events: list[tuple[str, int, int]] = []
+    def on_progress(stage_name: str, current: int, total: int) -> None:
+        progress_events.append((stage_name, current, total))
+
     result = pipeline.run(
         str(source_file),
-        on_progress=lambda stage, current, total: progress_events.append((stage, current, total)),
+        on_progress=on_progress,
     )
 
     assert result.skipped is True
@@ -239,12 +268,12 @@ def test_ingestion_pipeline_raises_clear_stage_error_and_marks_failed(tmp_path: 
     integrity = FakeIntegrityChecker(should_skip=False)
     pipeline = IngestionPipeline(
         _make_settings(),
-        integrity_checker=integrity,
-        loader=FakeLoader(str(source_image)),
-        chunker=FakeChunker(fail=True),
-        transforms=[FakeTransform()],
-        batch_processor=FakeBatchProcessor(),
-        vector_upserter=FakeVectorUpserter(),
+        integrity_checker=cast(FileIntegrityChecker, integrity),
+        loader=cast(BaseLoader, FakeLoader(str(source_image))),
+        chunker=cast(DocumentChunker, FakeChunker(fail=True)),
+        transforms=cast(list[BaseTransform], [FakeTransform()]),
+        batch_processor=cast(BatchProcessor, FakeBatchProcessor()),
+        vector_upserter=cast(VectorUpserter, FakeVectorUpserter()),
         bm25_indexer=BM25Indexer(index_dir=tmp_path / "bm25"),
         image_storage=ImageStorage(image_root=tmp_path / "images", db_path=tmp_path / "image_index.db"),
     )

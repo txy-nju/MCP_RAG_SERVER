@@ -169,12 +169,26 @@ class IngestionPipeline:
 		try:
 			file_hash = self._integrity_checker.compute_sha256(source_path)
 			if not force and self._integrity_checker.should_skip(file_hash):
-				trace.record_stage(stage, {"source_path": source_path, "skip": True})
+				trace.record_stage(
+					stage,
+					{
+						"method": "sha256",
+						"provider": self._integrity_checker.__class__.__name__.lower(),
+						"details": {"source_path": source_path, "skip": True},
+					},
+				)
 				self._emit_progress(on_progress, stage, 1)
 				self._logger.info("Skipping unchanged file source=%s", source_path)
 				return None
 
-			trace.record_stage(stage, {"source_path": source_path, "skip": False})
+			trace.record_stage(
+				stage,
+				{
+					"method": "sha256",
+					"provider": self._integrity_checker.__class__.__name__.lower(),
+					"details": {"source_path": source_path, "skip": False},
+				},
+			)
 			self._emit_progress(on_progress, stage, 1)
 			return file_hash
 		except Exception as exc:
@@ -189,7 +203,17 @@ class IngestionPipeline:
 		stage = "load"
 		try:
 			document = self._loader.load(source_path)
-			trace.record_stage(stage, {"document_id": document.id, "text_chars": len(document.text)})
+			trace.record_stage(
+				stage,
+				{
+					"method": "load_document",
+					"provider": self._loader.__class__.__name__.lower(),
+					"details": {
+						"document_id": document.id,
+						"text_chars": len(document.text),
+					},
+				},
+			)
 			self._emit_progress(on_progress, stage, 2)
 			return document
 		except Exception as exc:
@@ -207,7 +231,17 @@ class IngestionPipeline:
 			chunks = self._chunker.split_document(document)
 			for chunk in chunks:
 				chunk.metadata.setdefault("collection", collection)
-			trace.record_stage(stage, {"chunk_count": len(chunks)})
+			trace.record_stage(
+				stage,
+				{
+					"method": "split_document",
+					"provider": str(self._settings.splitter.provider),
+					"details": {
+						"chunk_count": len(chunks),
+						"collection": collection,
+					},
+				},
+			)
 			self._emit_progress(on_progress, stage, 3)
 			return chunks
 		except Exception as exc:
@@ -224,7 +258,17 @@ class IngestionPipeline:
 			transformed = chunks
 			for transform in self._transforms:
 				transformed = transform.transform(transformed, trace=trace)
-			trace.record_stage(stage, {"chunk_count": len(transformed), "transform_steps": len(self._transforms)})
+			trace.record_stage(
+				stage,
+				{
+					"method": "transform_chain",
+					"provider": "->".join(t.__class__.__name__.lower() for t in self._transforms),
+					"details": {
+						"chunk_count": len(transformed),
+						"transform_steps": len(self._transforms),
+					},
+				},
+			)
 			self._emit_progress(on_progress, stage, 4)
 			return transformed
 		except Exception as exc:
@@ -237,10 +281,20 @@ class IngestionPipeline:
 		trace: TraceContext,
 		on_progress: ProgressCallback | None,
 	) -> list[ChunkRecord]:
-		stage = "encode"
+		stage = "embed"
 		try:
 			records = self._batch_processor.process(chunks, batch_size=batch_size, trace=trace)
-			trace.record_stage(stage, {"record_count": len(records), "batch_size": batch_size})
+			trace.record_stage(
+				stage,
+				{
+					"method": "dense_sparse_batch",
+					"provider": f"{self._settings.embedding.provider}+bm25",
+					"details": {
+						"record_count": len(records),
+						"batch_size": batch_size,
+					},
+				},
+			)
 			self._emit_progress(on_progress, stage, 5)
 			return records
 		except Exception as exc:
@@ -255,7 +309,7 @@ class IngestionPipeline:
 		trace: TraceContext,
 		on_progress: ProgressCallback | None,
 	) -> tuple[list[str], int]:
-		stage = "store"
+		stage = "upsert"
 		try:
 			upserted_ids = self._vector_upserter.upsert(records, trace=trace)
 			self._bm25_indexer.build(records, rebuild=False)
@@ -263,9 +317,13 @@ class IngestionPipeline:
 			trace.record_stage(
 				stage,
 				{
-					"upserted_count": len(upserted_ids),
-					"bm25_index_path": str(self._bm25_indexer.index_path),
-					"saved_image_count": saved_images,
+					"method": "upsert_indexes",
+					"provider": f"{self._settings.vector_store.provider}+bm25+image_storage",
+					"details": {
+						"upserted_count": len(upserted_ids),
+						"bm25_index_path": str(self._bm25_indexer.index_path),
+						"saved_image_count": saved_images,
+					},
 				},
 			)
 			self._emit_progress(on_progress, stage, 6)
