@@ -27,6 +27,14 @@ class FileIntegrityChecker(ABC):
     def mark_failed(self, file_hash: str, error_msg: str) -> None:
         """Record *file_hash* as failed with *error_msg*."""
 
+    @abstractmethod
+    def remove_record(self, file_hash: str) -> None:
+        """Delete the persisted record for *file_hash* if it exists."""
+
+    @abstractmethod
+    def list_processed(self) -> list[dict[str, str | None]]:
+        """Return processed records ordered by latest update time."""
+
 
 class SQLiteIntegrityChecker(FileIntegrityChecker):
     """SQLite-backed file integrity checker.
@@ -94,6 +102,36 @@ class SQLiteIntegrityChecker(FileIntegrityChecker):
                 """,
                 (file_hash, error_msg),
             )
+
+    def remove_record(self, file_hash: str) -> None:
+        """Delete record for *file_hash* if present."""
+        with self._connect() as conn:
+            conn.execute("DELETE FROM ingestion_history WHERE file_hash = ?", (str(file_hash),))
+
+    def list_processed(self) -> list[dict[str, str | None]]:
+        """Return all ingestion history rows sorted by update time descending."""
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT file_hash, file_path, status, extra, created_at, updated_at
+                FROM ingestion_history
+                ORDER BY updated_at DESC, created_at DESC
+                """
+            ).fetchall()
+
+        results: list[dict[str, str | None]] = []
+        for row in rows:
+            results.append(
+                {
+                    "file_hash": str(row[0]),
+                    "file_path": str(row[1]),
+                    "status": str(row[2]),
+                    "extra": row[3],
+                    "created_at": str(row[4]),
+                    "updated_at": str(row[5]),
+                }
+            )
+        return results
 
     # ------------------------------------------------------------------
     # Internal helpers

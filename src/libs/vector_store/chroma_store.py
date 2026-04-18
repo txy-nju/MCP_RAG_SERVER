@@ -151,6 +151,78 @@ class ChromaStore(BaseVectorStore):
 
         return [by_id[record_id] for record_id in normalized_ids if record_id in by_id]
 
+    def get_by_metadata(
+        self,
+        filters: dict[str, Any] | None = None,
+        *,
+        limit: int | None = None,
+        trace: TraceContext | None = None,
+    ) -> list[VectorStoreQueryResult]:
+        """Fetch records by metadata equality filters.
+
+        Args:
+            filters: Optional metadata filter mapping.
+            limit: Optional max number of records to fetch.
+            trace: Optional trace context reserved for future observability.
+
+        Returns:
+            Matched records as normalized query results.
+        """
+
+        del trace
+        if filters is not None and not isinstance(filters, dict):
+            raise ValueError("chroma vector store get_by_metadata failed: filters must be a mapping")
+        if limit is not None and limit <= 0:
+            raise ValueError("chroma vector store get_by_metadata failed: limit must be greater than 0")
+
+        payload = self._collection.get(
+            where=filters or None,
+            limit=limit,
+            include=["documents", "metadatas"],
+        )
+        ids = payload.get("ids", [])
+        documents = payload.get("documents", [])
+        metadatas = payload.get("metadatas", [])
+
+        results: list[VectorStoreQueryResult] = []
+        for record_id, document, metadata in zip(ids, documents, metadatas, strict=False):
+            results.append(
+                VectorStoreQueryResult(
+                    id=str(record_id),
+                    score=0.0,
+                    text=document,
+                    metadata=dict(metadata or {}),
+                )
+            )
+        return results
+
+    def delete_by_metadata(
+        self,
+        filters: dict[str, Any],
+        trace: TraceContext | None = None,
+    ) -> int:
+        """Delete records that match metadata equality filters.
+
+        Args:
+            filters: Metadata filter mapping used for batch delete.
+            trace: Optional trace context reserved for future observability.
+
+        Returns:
+            Number of deleted records.
+        """
+
+        del trace
+        if not isinstance(filters, dict) or not filters:
+            raise ValueError("chroma vector store delete_by_metadata failed: filters must be a non-empty mapping")
+
+        payload = self._collection.get(where=filters, include=[])
+        ids = [str(item) for item in payload.get("ids", []) if str(item).strip()]
+        if not ids:
+            return 0
+
+        self._collection.delete(ids=ids)
+        return len(ids)
+
     @classmethod
     def from_settings(cls, settings: Any) -> "ChromaStore":
         """Build a Chroma store from vector-store settings.

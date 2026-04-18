@@ -76,6 +76,7 @@ class BM25Indexer:
 
             self._documents[record.id] = {
                 "chunk_id": record.id,
+                "source_path": str(record.metadata.get("source_path", "")),
                 "terms": terms,
                 "doc_length": int(sum(terms.values())),
             }
@@ -147,6 +148,26 @@ class BM25Indexer:
             {"chunk_id": chunk_id, "score": float(round(score, 6))}
             for chunk_id, score in ranked[:top_k]
         ]
+
+    def remove_document(self, source: str) -> None:
+        """Remove all indexed chunks that belong to *source* and persist changes."""
+        normalized_source = str(source).strip()
+        if not normalized_source:
+            return
+
+        remove_ids = [
+            chunk_id
+            for chunk_id, payload in self._documents.items()
+            if str(payload.get("source_path", "")) == normalized_source
+        ]
+        if not remove_ids:
+            return
+
+        for chunk_id in remove_ids:
+            self._documents.pop(chunk_id, None)
+
+        self._recompute_index()
+        self.save()
 
     # ------------------------------------------------------------------
     # Internal helpers

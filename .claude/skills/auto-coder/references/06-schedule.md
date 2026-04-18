@@ -115,16 +115,16 @@
 |---------|---------|------|---------|------|
 | F1 | TraceContext 增强（finish + 耗时统计 + trace_type） | [x] | 2026-04-17 | 完成 TraceContext finish/elapsed/to_dict、TraceCollector 与 test_trace_context 单测 |
 | F2 | 结构化日志 logger（JSON Lines） | [x] | 2026-04-17 | 完成 JSONFormatter/get_trace_logger/write_trace 与 test_jsonl_logger 单测 |
-| F3 | 在 Query 链路打点 | [ ] | | |
-| F4 | 在 Ingestion 链路打点 | [ ] | | |
-| F5 | Pipeline 进度回调 (on_progress) | [ ] | | |
+| F3 | 在 Query 链路打点 | [x] | 2026-04-18 | HybridSearch/Reranker 已接入 query trace 阶段打点并补充集成测试 |
+| F4 | 在 Ingestion 链路打点 | [x] | 2026-04-18 | IngestionPipeline 已接入 load/split/transform/embed/upsert trace 打点并补充集成测试 |
+| F5 | Pipeline 进度回调 (on_progress) | [x] | 2026-04-18 | 新增 test_pipeline_progress 单测，验证阶段回调参数与 on_progress=None 行为一致 |
 
 #### 阶段 G：可视化管理平台 Dashboard
 
 | 任务编号 | 任务名称 | 状态 | 完成日期 | 备注 |
 |---------|---------|------|---------|------|
-| G1 | Dashboard 基础架构与系统总览页 | [ ] | | |
-| G2 | DocumentManager 实现 | [ ] | | |
+| G1 | Dashboard 基础架构与系统总览页 | [x] | 2026-04-18 | app.py 多页面导航、overview.py 系统总览页、ConfigService、start_dashboard.py 已完成 |
+| G2 | DocumentManager 实现 | [x] | 2026-04-18 | 完成跨存储 list/detail/delete/stats 与 G2 单测 |
 | G3 | 数据浏览器页面 | [ ] | | |
 | G4 | Ingestion 管理页面 | [ ] | | |
 | G5 | Ingestion 追踪页面 | [ ] | | |

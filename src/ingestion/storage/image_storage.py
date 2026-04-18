@@ -106,6 +106,79 @@ class ImageStorage:
 			for row in rows
 		]
 
+	def list_images(
+		self,
+		*,
+		collection: str | None = None,
+		doc_hash: str | None = None,
+	) -> list[dict[str, Any]]:
+		"""List image rows with optional collection/doc_hash filters."""
+		clauses: list[str] = []
+		params: list[str] = []
+
+		if collection is not None:
+			normalized_collection = str(collection).strip()
+			if normalized_collection:
+				clauses.append("collection = ?")
+				params.append(normalized_collection)
+
+		if doc_hash is not None:
+			normalized_doc_hash = str(doc_hash).strip()
+			if normalized_doc_hash:
+				clauses.append("doc_hash = ?")
+				params.append(normalized_doc_hash)
+
+		where_clause = f"WHERE {' AND '.join(clauses)}" if clauses else ""
+		query = f"""
+			SELECT image_id, file_path, collection, doc_hash, page_num, created_at
+			FROM image_index
+			{where_clause}
+			ORDER BY created_at ASC, image_id ASC
+		"""
+
+		with self._connect() as conn:
+			rows = conn.execute(query, tuple(params)).fetchall()
+
+		return [
+			{
+				"image_id": str(row[0]),
+				"file_path": str(row[1]),
+				"collection": str(row[2]),
+				"doc_hash": row[3],
+				"page_num": row[4],
+				"created_at": str(row[5]),
+			}
+			for row in rows
+		]
+
+	def delete_images(
+		self,
+		*,
+		collection: str | None = None,
+		doc_hash: str | None = None,
+	) -> int:
+		"""Delete indexed images and underlying files by optional filters."""
+		rows = self.list_images(collection=collection, doc_hash=doc_hash)
+		if not rows:
+			return 0
+
+		deleted = 0
+		for row in rows:
+			try:
+				path = Path(str(row["file_path"]))
+				if path.exists():
+					path.unlink()
+			except Exception:
+				# Index cleanup should continue even when disk cleanup partially fails.
+				pass
+
+		with self._connect() as conn:
+			for row in rows:
+				conn.execute("DELETE FROM image_index WHERE image_id = ?", (str(row["image_id"]),))
+				deleted += 1
+
+		return deleted
+
 	def _connect(self) -> sqlite3.Connection:
 		conn = sqlite3.connect(str(self._db_path), check_same_thread=False)
 		conn.execute("PRAGMA journal_mode=WAL")
