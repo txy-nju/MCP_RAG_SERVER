@@ -2027,7 +2027,7 @@ dashboard:
 | F2 | 结构化日志 logger（JSON Lines） | [x] | 2026-04-17 | 完成 JSONFormatter/get_trace_logger/write_trace 与 test_jsonl_logger 单测 |
 | F3 | 在 Query 链路打点 | [x] | 2026-04-18 | HybridSearch/Reranker 已接入 query trace 阶段打点并补充集成测试 |
 | F4 | 在 Ingestion 链路打点 | [x] | 2026-04-18 | IngestionPipeline 已接入 load/split/transform/embed/upsert trace 打点并补充集成测试 |
-| F5 | Pipeline 进度回调 (on_progress) | [ ] | | |
+| F5 | Pipeline 进度回调 (on_progress) | [x] | 2026-04-18 | 新增 test_pipeline_progress 单测，验证阶段回调参数与 on_progress=None 行为一致 |
 
 #### 阶段 G：可视化管理平台 Dashboard
 
