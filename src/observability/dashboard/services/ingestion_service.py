@@ -36,7 +36,7 @@ class IngestionService:
         self._settings = settings or load_settings(config_path or _DEFAULT_CONFIG_PATH)
         self._documents_root = Path(documents_root) if documents_root is not None else _DEFAULT_DOCUMENTS_ROOT
         self._data_service = data_service or DataService(settings=self._settings)
-        self._pipeline = pipeline or IngestionPipeline(self._settings)
+        self._pipeline = pipeline
 
     @property
     def default_collection(self) -> str:
@@ -88,7 +88,7 @@ class IngestionService:
         """Persist and ingest one uploaded document."""
         target_path = self.save_uploaded_file(uploaded_file, collection)
         normalized_collection = str(collection).strip() or self.default_collection or "default"
-        return self._pipeline.run(
+        return self._get_pipeline().run(
             str(target_path),
             collection=normalized_collection,
             force=force,
@@ -99,6 +99,11 @@ class IngestionService:
     def delete_document(self, source_path: str, collection: str | None = None) -> Any:
         """Delete one ingested source document."""
         return self._data_service.delete_document(source_path, collection=collection)
+
+    def _get_pipeline(self) -> IngestionPipeline:
+        if self._pipeline is None:
+            self._pipeline = IngestionPipeline(self._settings)
+        return self._pipeline
 
 
 __all__ = ["IngestionService", "UploadedFileLike"]

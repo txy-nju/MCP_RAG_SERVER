@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib
+import json
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -16,6 +17,7 @@ class ChromaStore(BaseVectorStore):
     """Persistent Chroma-backed vector store."""
 
     default_persist_path = "data/db/chroma"
+    _JSON_METADATA_PREFIX = "__json__:"
 
     def __init__(self, *, provider: str, collection: str, persist_path: str) -> None:
         """Initialize a Chroma-backed store.
@@ -64,7 +66,7 @@ class ChromaStore(BaseVectorStore):
             self._validate_record(record, index=index)
             ids.append(record.id)
             embeddings.append(record.embedding)
-            metadatas.append(dict(record.metadata))
+            metadatas.append(self._serialize_metadata(record.metadata))
             documents.append(record.text or "")
 
         self._collection.upsert(ids=ids, embeddings=embeddings, metadatas=metadatas, documents=documents)
@@ -100,7 +102,7 @@ class ChromaStore(BaseVectorStore):
         payload = self._collection.query(
             query_embeddings=[vector],
             n_results=top_k,
-            where=filters or None,
+            where=self._normalize_where(filters),
             include=["documents", "metadatas", "distances"],
         )
         ids = payload.get("ids", [[]])[0]
@@ -116,7 +118,7 @@ class ChromaStore(BaseVectorStore):
                     id=str(record_id),
                     score=1.0 - numeric_distance,
                     text=document,
-                    metadata=dict(metadata or {}),
+                    metadata=self._deserialize_metadata(metadata),
                 )
             )
         return results
@@ -146,7 +148,7 @@ class ChromaStore(BaseVectorStore):
                 id=str(record_id),
                 score=0.0,
                 text=document,
-                metadata=dict(metadata or {}),
+                metadata=self._deserialize_metadata(metadata),
             )
 
         return [by_id[record_id] for record_id in normalized_ids if record_id in by_id]
@@ -176,7 +178,7 @@ class ChromaStore(BaseVectorStore):
             raise ValueError("chroma vector store get_by_metadata failed: limit must be greater than 0")
 
         payload = self._collection.get(
-            where=filters or None,
+            where=self._normalize_where(filters),
             limit=limit,
             include=["documents", "metadatas"],
         )
@@ -191,7 +193,7 @@ class ChromaStore(BaseVectorStore):
                     id=str(record_id),
                     score=0.0,
                     text=document,
-                    metadata=dict(metadata or {}),
+                    metadata=self._deserialize_metadata(metadata),
                 )
             )
         return results
@@ -215,7 +217,7 @@ class ChromaStore(BaseVectorStore):
         if not isinstance(filters, dict) or not filters:
             raise ValueError("chroma vector store delete_by_metadata failed: filters must be a non-empty mapping")
 
-        payload = self._collection.get(where=filters, include=[])
+        payload = self._collection.get(where=self._normalize_where(filters), include=[])
         ids = [str(item) for item in payload.get("ids", []) if str(item).strip()]
         if not ids:
             return 0
@@ -295,6 +297,69 @@ class ChromaStore(BaseVectorStore):
         self._validate_query_vector(record.embedding, context=f"record {index} embedding")
         if not isinstance(record.metadata, dict):
             raise ValueError(f"{self.provider} vector store upsert failed: record {index} metadata must be a mapping")
+
+    @classmethod
+    def _serialize_metadata(cls, metadata: dict[str, Any]) -> dict[str, str | int | float | bool]:
+        serialized: dict[str, str | int | float | bool] = {}
+        for key, value in dict(metadata).items():
+            normalized_key = str(key)
+            scalar = cls._serialize_metadata_value(value)
+            if scalar is None:
+                continue
+            serialized[normalized_key] = scalar
+        return serialized
+
+    @classmethod
+    def _serialize_metadata_value(cls, value: Any) -> str | int | float | bool | None:
+        if isinstance(value, bool):
+            return value
+        if isinstance(value, (str, int, float)):
+            return value
+        if value is None:
+            return None
+        if isinstance(value, (list, dict)):
+            return cls._JSON_METADATA_PREFIX + json.dumps(value, ensure_ascii=True, sort_keys=True)
+        return str(value)
+
+    @classmethod
+    def _deserialize_metadata(cls, metadata: Any) -> dict[str, Any]:
+        if not isinstance(metadata, dict):
+            return {}
+
+        restored: dict[str, Any] = {}
+        for key, value in metadata.items():
+            restored[str(key)] = cls._deserialize_metadata_value(value)
+        return restored
+
+    @classmethod
+    def _deserialize_metadata_value(cls, value: Any) -> Any:
+        if not isinstance(value, str) or not value.startswith(cls._JSON_METADATA_PREFIX):
+            return value
+
+        raw_payload = value[len(cls._JSON_METADATA_PREFIX) :]
+        try:
+            return json.loads(raw_payload)
+        except json.JSONDecodeError:
+            return value
+
+    @classmethod
+    def _normalize_where(cls, filters: dict[str, Any] | None) -> dict[str, Any] | None:
+        if not filters:
+            return None
+
+        predicates: list[dict[str, str | int | float | bool]] = []
+        for key, raw_value in filters.items():
+            normalized_key = str(key)
+            normalized_value = cls._serialize_metadata_value(raw_value)
+            if normalized_value is None:
+                continue
+            predicates.append({normalized_key: normalized_value})
+
+        if not predicates:
+            return None
+        if len(predicates) == 1:
+            return predicates[0]
+        return {"$and": predicates}
 
     def _validate_query_vector(self, vector: list[float], *, context: str = "query vector") -> None:
         """Validate an embedding vector used for upsert or query operations.

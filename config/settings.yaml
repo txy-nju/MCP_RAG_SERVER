@@ -2,13 +2,13 @@ llm:
   provider: openai
   model: gpt-4o-mini
   api_key: your-api-key
-  api_url: your-proxy-url
+  api_url: your-api-url
 
 embedding:
   provider: openai
   model: text-embedding-3-small
   api_key: your-api-key
-  api_url: your-proxy-url
+  api_url: your-api-url
 
 splitter:
   provider: recursive

@@ -17,6 +17,8 @@ llm:
 embedding:
   provider: openai
   model: text-embedding-3-small
+  api_key: embedding-secret
+  api_url: https://example.test/v1/embeddings
 splitter:
   provider: recursive
   chunk_size: 1000
@@ -76,6 +78,8 @@ def test_load_settings_returns_settings_object(tmp_path: Path) -> None:
 
     assert isinstance(settings, Settings)
     assert settings.embedding.provider == "openai"
+    assert settings.embedding.api_key == "embedding-secret"
+    assert settings.embedding.api_url == "https://example.test/v1/embeddings"
     assert settings.splitter.provider == "recursive"
     assert settings.vector_store.collection == "test"
     assert settings.vector_store.persist_path == "data/db/chroma"

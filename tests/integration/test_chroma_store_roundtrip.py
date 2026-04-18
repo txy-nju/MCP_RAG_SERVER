@@ -63,3 +63,64 @@ def test_chroma_store_roundtrip_supports_upsert_query_and_filters(tmp_path: Path
 
     assert [result.id for result in persisted_results] == ["chunk-002"]
     assert persisted_results[0].text == "beta document"
+
+
+@pytest.mark.integration
+def test_chroma_store_roundtrip_serializes_and_restores_nested_metadata(tmp_path: Path) -> None:
+    persist_path = tmp_path / "chroma-nested"
+    vector_store = ChromaStore(provider="chroma", collection="roundtrip-nested", persist_path=str(persist_path))
+
+    vector_store.upsert(
+        [
+            VectorStoreRecord(
+                id="chunk-nested-001",
+                embedding=[1.0, 0.0, 0.0],
+                text="document with nested metadata",
+                metadata={
+                    "source_path": "docs/a.pdf",
+                    "chunk_index": 0,
+                    "tags": ["alpha", "beta"],
+                    "images": [{"id": "img-1", "path": "data/images/img-1.png"}],
+                    "has_unprocessed_images": False,
+                },
+            )
+        ]
+    )
+
+    results = vector_store.get_by_ids(["chunk-nested-001"])
+
+    assert len(results) == 1
+    assert results[0].metadata["source_path"] == "docs/a.pdf"
+    assert results[0].metadata["chunk_index"] == 0
+    assert results[0].metadata["tags"] == ["alpha", "beta"]
+    assert results[0].metadata["images"] == [{"id": "img-1", "path": "data/images/img-1.png"}]
+    assert results[0].metadata["has_unprocessed_images"] is False
+
+
+@pytest.mark.integration
+def test_chroma_store_get_by_metadata_supports_multi_field_filters(tmp_path: Path) -> None:
+    persist_path = tmp_path / "chroma-multi-filters"
+    vector_store = ChromaStore(provider="chroma", collection="roundtrip-multi", persist_path=str(persist_path))
+
+    vector_store.upsert(
+        [
+            VectorStoreRecord(
+                id="chunk-a",
+                embedding=[1.0, 0.0, 0.0],
+                text="alpha chunk",
+                metadata={"source_path": "docs/a.pdf", "collection": "default"},
+            ),
+            VectorStoreRecord(
+                id="chunk-b",
+                embedding=[0.0, 1.0, 0.0],
+                text="beta chunk",
+                metadata={"source_path": "docs/a.pdf", "collection": "other"},
+            ),
+        ]
+    )
+
+    rows = vector_store.get_by_metadata(filters={"source_path": "docs/a.pdf", "collection": "default"})
+
+    assert [row.id for row in rows] == ["chunk-a"]
+    assert rows[0].metadata["source_path"] == "docs/a.pdf"
+    assert rows[0].metadata["collection"] == "default"

@@ -39,6 +39,11 @@ class EmbeddingSettings:
 
     provider: str
     model: str
+    endpoint: str | None = None
+    api_version: str | None = None
+    api_url: str | None = None
+    api_key: str | None = None
+    deployment_name: str | None = None
 
 
 @dataclass(slots=True)
@@ -316,6 +321,11 @@ def load_settings(path: str | Path) -> Settings:
         embedding=EmbeddingSettings(
             provider=str(_require_value(embedding, "provider", "embedding")),
             model=str(_require_value(embedding, "model", "embedding")),
+            endpoint=_optional_str(embedding, "endpoint") or _optional_str(embedding, "azure_endpoint"),
+            api_version=_optional_str(embedding, "api_version"),
+            api_url=_optional_str(embedding, "api_url"),
+            api_key=_optional_str(embedding, "api_key"),
+            deployment_name=_optional_str(embedding, "deployment_name"),
         ),
         splitter=SplitterSettings(
             provider=str(_require_value(splitter, "provider", "splitter")),
