@@ -241,3 +241,16 @@ class ChromaStore(BaseVectorStore):
             raise ValueError(f"{self.provider} vector store query failed: {context} must be a non-empty list")
         if not all(isinstance(item, (int, float)) for item in vector):
             raise ValueError(f"{self.provider} vector store query failed: {context} must contain numeric values")
+
+    def get_collection_stats(self) -> dict[str, Any]:
+        """Return basic statistics for the current collection.
+
+        Returns:
+            A dict with keys:
+            - ``collection``: collection name
+            - ``chunk_count``: number of stored vector records
+        """
+        return {
+            "collection": self.collection,
+            "chunk_count": self._collection.count(),
+        }

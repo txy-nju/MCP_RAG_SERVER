@@ -2033,7 +2033,7 @@ dashboard:
 
 | 任务编号 | 任务名称 | 状态 | 完成日期 | 备注 |
 |---------|---------|------|---------|------|
-| G1 | Dashboard 基础架构与系统总览页 | [ ] | | |
+| G1 | Dashboard 基础架构与系统总览页 | [x] | 2026-04-18 | app.py 多页面导航、overview.py 系统总览页、ConfigService、start_dashboard.py 已完成 |
 | G2 | DocumentManager 实现 | [ ] | | |
 | G3 | 数据浏览器页面 | [ ] | | |
 | G4 | Ingestion 管理页面 | [ ] | | |
