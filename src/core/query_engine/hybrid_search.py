@@ -58,6 +58,18 @@ class HybridSearch:
 		assert self.fusion is not None
 
 		processed = self.query_processor.process(normalized_query, filters=filters)
+		if trace is not None:
+			trace.record_stage(
+				"query_processing",
+				{
+					"method": "rule_based",
+					"provider": "builtin",
+					"details": {
+						"keywords_count": len(processed.keywords),
+						"filters_count": len(processed.filters),
+					},
+				},
+			)
 		candidate_top_k = max(self.settings.retrieval.top_k, top_k * 2)
 
 		dense_results: list[RetrievalResult] = []
@@ -82,23 +94,116 @@ class HybridSearch:
 
 			try:
 				dense_results = dense_future.result()
+				if trace is not None:
+					trace.record_stage(
+						"dense_retrieval",
+						{
+							"method": "embedding_vector_store",
+							"provider": f"{self.settings.embedding.provider}+{self.settings.vector_store.provider}",
+							"details": {
+								"top_k": candidate_top_k,
+								"filters": dict(processed.filters),
+								"result_count": len(dense_results),
+							},
+						},
+					)
 			except Exception as exc:  # pragma: no cover - exercised by integration tests
 				dense_error = exc
+				if trace is not None:
+					trace.record_stage(
+						"dense_retrieval",
+						{
+							"method": "embedding_vector_store",
+							"provider": f"{self.settings.embedding.provider}+{self.settings.vector_store.provider}",
+							"details": {
+								"top_k": candidate_top_k,
+								"filters": dict(processed.filters),
+								"result_count": 0,
+								"error": str(exc),
+							},
+						},
+					)
 
 			try:
 				sparse_results = sparse_future.result()
+				if trace is not None:
+					trace.record_stage(
+						"sparse_retrieval",
+						{
+							"method": "bm25",
+							"provider": "bm25",
+							"details": {
+								"top_k": candidate_top_k,
+								"keywords": list(processed.keywords),
+								"result_count": len(sparse_results),
+							},
+						},
+					)
 			except Exception as exc:  # pragma: no cover - exercised by integration tests
 				sparse_error = exc
+				if trace is not None:
+					trace.record_stage(
+						"sparse_retrieval",
+						{
+							"method": "bm25",
+							"provider": "bm25",
+							"details": {
+								"top_k": candidate_top_k,
+								"keywords": list(processed.keywords),
+								"result_count": 0,
+								"error": str(exc),
+							},
+						},
+					)
 
 		if dense_error and sparse_error:
 			raise RuntimeError("dense and sparse retrieval both failed") from dense_error
 
 		if dense_results and sparse_results:
 			candidates = self.fusion.fuse(dense_results, sparse_results, top_k=candidate_top_k)
+			if trace is not None:
+				trace.record_stage(
+					"fusion",
+					{
+						"method": "rrf",
+						"provider": "rrf",
+						"details": {
+							"dense_count": len(dense_results),
+							"sparse_count": len(sparse_results),
+							"candidate_count": len(candidates),
+						},
+					},
+				)
 		elif dense_results:
 			candidates = list(dense_results)
+			if trace is not None:
+				trace.record_stage(
+					"fusion",
+					{
+						"method": "passthrough",
+						"provider": "dense_only",
+						"details": {
+							"dense_count": len(dense_results),
+							"sparse_count": 0,
+							"candidate_count": len(candidates),
+						},
+					},
+				)
 		else:
 			candidates = list(sparse_results)
+			if trace is not None:
+				trace.record_stage(
+					"fusion",
+					{
+						"method": "passthrough",
+						"provider": "sparse_only",
+						"details": {
+							"dense_count": 0,
+							"sparse_count": len(sparse_results),
+							"candidate_count": len(candidates),
+						},
+					},
+				)
 
 		filtered = self._apply_metadata_filters(candidates, processed.filters)
 		return filtered[:top_k]

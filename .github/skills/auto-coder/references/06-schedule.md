@@ -113,9 +113,9 @@
 
 | 任务编号 | 任务名称 | 状态 | 完成日期 | 备注 |
 |---------|---------|------|---------|------|
-| F1 | TraceContext 增强（finish + 耗时统计 + trace_type） | [ ] | | |
-| F2 | 结构化日志 logger（JSON Lines） | [ ] | | |
-| F3 | 在 Query 链路打点 | [ ] | | |
+| F1 | TraceContext 增强（finish + 耗时统计 + trace_type） | [x] | 2026-04-17 | 完成 TraceContext finish/elapsed/to_dict、TraceCollector 与 test_trace_context 单测 |
+| F2 | 结构化日志 logger（JSON Lines） | [x] | 2026-04-17 | 完成 JSONFormatter/get_trace_logger/write_trace 与 test_jsonl_logger 单测 |
+| F3 | 在 Query 链路打点 | [x] | 2026-04-18 | HybridSearch/Reranker 已接入 query trace 阶段打点并补充集成测试 |
 | F4 | 在 Ingestion 链路打点 | [ ] | | |
 | F5 | Pipeline 进度回调 (on_progress) | [ ] | | |
 

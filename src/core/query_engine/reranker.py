@@ -39,8 +39,30 @@ class Reranker:
 		"""Rerank candidates with fallback to original order on error."""
 
 		if not candidates:
+			if trace is not None:
+				trace.record_stage(
+					"rerank",
+					{
+						"method": "skip",
+						"provider": "none",
+						"details": {"candidate_count": 0, "result_count": 0, "fallback": False},
+					},
+				)
 			return RerankResult(candidates=[])
 		if not query or not str(query).strip():
+			if trace is not None:
+				trace.record_stage(
+					"rerank",
+					{
+						"method": "skip",
+						"provider": "none",
+						"details": {
+							"candidate_count": len(candidates),
+							"result_count": len(candidates),
+							"fallback": False,
+						},
+					},
+				)
 			return RerankResult(candidates=list(candidates))
 
 		backend = RerankerFactory.create(self.settings)
@@ -74,16 +96,71 @@ class Reranker:
 						)
 					)
 			
+			if trace is not None:
+				trace.record_stage(
+					"rerank",
+					{
+						"method": "reranker",
+						"provider": str(getattr(backend, "provider", "unknown")),
+						"details": {
+							"candidate_count": len(candidates),
+							"result_count": len(result_candidates),
+							"fallback": False,
+						},
+					},
+				)
 			return RerankResult(candidates=result_candidates, fallback=False)
 
 		except RerankerFallbackError as exc:
 			reason = f"reranker {backend.provider} failed: {str(exc)}"
+			if trace is not None:
+				trace.record_stage(
+					"rerank",
+					{
+						"method": "reranker",
+						"provider": str(getattr(backend, "provider", "unknown")),
+						"details": {
+							"candidate_count": len(candidates),
+							"result_count": len(candidates),
+							"fallback": True,
+							"reason": reason,
+						},
+					},
+				)
 			return RerankResult(candidates=list(candidates), fallback=True, fallback_reason=reason)
 		except TimeoutError as exc:
 			reason = f"reranker timeout after {self.timeout_seconds} seconds"
+			if trace is not None:
+				trace.record_stage(
+					"rerank",
+					{
+						"method": "reranker",
+						"provider": str(getattr(backend, "provider", "unknown")),
+						"details": {
+							"candidate_count": len(candidates),
+							"result_count": len(candidates),
+							"fallback": True,
+							"reason": reason,
+						},
+					},
+				)
 			return RerankResult(candidates=list(candidates), fallback=True, fallback_reason=reason)
 		except Exception as exc:
 			reason = f"reranker unexpected error: {str(exc)}"
+			if trace is not None:
+				trace.record_stage(
+					"rerank",
+					{
+						"method": "reranker",
+						"provider": str(getattr(backend, "provider", "unknown")),
+						"details": {
+							"candidate_count": len(candidates),
+							"result_count": len(candidates),
+							"fallback": True,
+							"reason": reason,
+						},
+					},
+				)
 			return RerankResult(candidates=list(candidates), fallback=True, fallback_reason=reason)
 
 

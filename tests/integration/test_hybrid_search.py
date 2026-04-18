@@ -2,11 +2,16 @@
 
 from __future__ import annotations
 
+from typing import cast
+
 import pytest
 
+from core.query_engine.dense_retriever import DenseRetriever
 from core.query_engine.fusion import RRFFuser
 from core.query_engine.hybrid_search import HybridSearch
 from core.query_engine.query_processor import QueryProcessor
+from core.query_engine.reranker import Reranker
+from core.query_engine.sparse_retriever import SparseRetriever
 from core.settings import (
 	EmbeddingSettings,
 	EvaluationSettings,
@@ -18,6 +23,7 @@ from core.settings import (
 	SplitterSettings,
 	VectorStoreSettings,
 )
+from core.trace.trace_context import TraceContext
 from core.types import RetrievalResult
 
 
@@ -86,8 +92,8 @@ def test_hybrid_search_fuses_dense_and_sparse_results_with_filters() -> None:
 	search = HybridSearch(
 		_make_settings(),
 		query_processor=QueryProcessor(),
-		dense_retriever=dense,
-		sparse_retriever=sparse,
+		dense_retriever=cast(DenseRetriever, dense),
+		sparse_retriever=cast(SparseRetriever, sparse),
 		fusion=RRFFuser(rrf_k=60),
 	)
 
@@ -105,13 +111,13 @@ def test_hybrid_search_degrades_to_sparse_when_dense_route_fails() -> None:
 	search = HybridSearch(
 		_make_settings(),
 		query_processor=QueryProcessor(),
-		dense_retriever=FakeDenseRetriever(error=RuntimeError("dense unavailable")),
-		sparse_retriever=FakeSparseRetriever(
+		dense_retriever=cast(DenseRetriever, FakeDenseRetriever(error=RuntimeError("dense unavailable"))),
+		sparse_retriever=cast(SparseRetriever, FakeSparseRetriever(
 			results=[
 				_result("s1", 1.0, collection="demo"),
 				_result("s2", 0.8, collection="demo"),
 			]
-		),
+		)),
 		fusion=RRFFuser(),
 	)
 
@@ -126,8 +132,8 @@ def test_hybrid_search_raises_when_both_routes_fail() -> None:
 	search = HybridSearch(
 		_make_settings(),
 		query_processor=QueryProcessor(),
-		dense_retriever=FakeDenseRetriever(error=RuntimeError("dense unavailable")),
-		sparse_retriever=FakeSparseRetriever(error=RuntimeError("sparse unavailable")),
+		dense_retriever=cast(DenseRetriever, FakeDenseRetriever(error=RuntimeError("dense unavailable"))),
+		sparse_retriever=cast(SparseRetriever, FakeSparseRetriever(error=RuntimeError("sparse unavailable"))),
 		fusion=RRFFuser(),
 	)
 
@@ -140,8 +146,8 @@ def test_hybrid_search_rejects_invalid_input() -> None:
 	search = HybridSearch(
 		_make_settings(),
 		query_processor=QueryProcessor(),
-		dense_retriever=FakeDenseRetriever(),
-		sparse_retriever=FakeSparseRetriever(),
+		dense_retriever=cast(DenseRetriever, FakeDenseRetriever()),
+		sparse_retriever=cast(SparseRetriever, FakeSparseRetriever()),
 		fusion=RRFFuser(),
 	)
 
@@ -150,3 +156,52 @@ def test_hybrid_search_rejects_invalid_input() -> None:
 
 	with pytest.raises(ValueError, match="top_k must be greater than 0"):
 		search.search("query", top_k=0)
+
+
+@pytest.mark.integration
+def test_query_trace_contains_all_required_stages() -> None:
+	settings = _make_settings()
+	trace = TraceContext(trace_type="query")
+
+	dense = FakeDenseRetriever(
+		results=[
+			_result("dense-only", 0.91, collection="demo", doc_type="pdf"),
+			_result("shared", 0.87, collection="demo", doc_type="pdf"),
+		]
+	)
+	sparse = FakeSparseRetriever(
+		results=[
+			_result("shared", 2.0, collection="demo", doc_type="pdf"),
+			_result("sparse-only", 1.5, collection="demo", doc_type="pdf"),
+		]
+	)
+
+	search = HybridSearch(
+		settings,
+		query_processor=QueryProcessor(),
+		dense_retriever=cast(DenseRetriever, dense),
+		sparse_retriever=cast(SparseRetriever, sparse),
+		fusion=RRFFuser(rrf_k=60),
+	)
+	reranker = Reranker(settings=settings)
+
+	candidates = search.search("find pipeline collection:demo", top_k=3, trace=trace)
+	rerank_result = reranker.rerank("find pipeline collection:demo", candidates, trace=trace)
+
+	stage_names = [item["stage"] for item in trace.stages]
+	assert stage_names == [
+		"query_processing",
+		"dense_retrieval",
+		"sparse_retrieval",
+		"fusion",
+		"rerank",
+	]
+	assert len(rerank_result.candidates) >= 1
+
+	for stage in trace.stages:
+		assert "elapsed_ms" in stage
+		assert isinstance(stage.get("elapsed_ms"), float)
+		assert "method" in stage["data"]
+
+	trace_payload = trace.to_dict()
+	assert trace_payload["trace_type"] == "query"
