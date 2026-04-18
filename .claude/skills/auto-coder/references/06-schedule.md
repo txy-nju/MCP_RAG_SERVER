@@ -127,7 +127,7 @@
 | G2 | DocumentManager 实现 | [x] | 2026-04-18 | 完成跨存储 list/detail/delete/stats 与 G2 单测 |
 | G3 | 数据浏览器页面 | [x] | 2026-04-18 | 完成 DataService 与 Data Browser 页面，支持集合筛选与文档/Chunk/图片浏览 |
 | G4 | Ingestion 管理页面 | [x] | 2026-04-18 | 完成上传触发摄取、实时进度展示、文档删除页面及 G4 单测 |
-| G5 | Ingestion 追踪页面 | [ ] | | |
+| G5 | Ingestion 追踪页面 | [x] | 2026-04-18 | 完成 TraceService 与 Ingestion Traces 页面，支持 ingestion traces 列表/详情与阶段数据展示 |
 | G6 | Query 追踪页面 | [ ] | | |
 
 #### 阶段 H：评估体系
