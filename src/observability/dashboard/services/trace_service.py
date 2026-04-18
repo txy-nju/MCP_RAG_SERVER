@@ -50,6 +50,11 @@ class TraceService:
 
 		return self.list_traces(trace_type_prefix="ingestion", limit=limit)
 
+	def list_query_traces(self, *, limit: int = 200) -> list[dict[str, Any]]:
+		"""Return query traces newest-first."""
+
+		return self.list_traces(trace_type_prefix="query", limit=limit)
+
 	def get_trace(self, trace_id: str) -> dict[str, Any] | None:
 		"""Return one trace row by trace_id, or None if absent."""
 

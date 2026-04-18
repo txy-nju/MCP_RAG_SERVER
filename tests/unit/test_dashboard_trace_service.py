@@ -90,6 +90,40 @@ def test_get_trace_returns_matching_payload(tmp_path: Path) -> None:
 
 
 @pytest.mark.unit
+def test_list_query_traces_filters_query_prefix(tmp_path: Path) -> None:
+    trace_file = tmp_path / "logs" / "traces.jsonl"
+    _write_lines(
+        trace_file,
+        [
+            json.dumps(
+                {
+                    "trace_id": "q-2",
+                    "trace_type": "query.pipeline",
+                    "started_at": "2026-04-18T13:00:00+00:00",
+                    "finished_at": "2026-04-18T13:00:03+00:00",
+                    "stages": [{"stage": "rerank"}],
+                }
+            ),
+            json.dumps(
+                {
+                    "trace_id": "i-3",
+                    "trace_type": "ingestion",
+                    "started_at": "2026-04-18T13:00:00+00:00",
+                    "finished_at": "2026-04-18T13:00:04+00:00",
+                    "stages": [{"stage": "upsert"}],
+                }
+            ),
+        ],
+    )
+
+    service = TraceService(trace_file=trace_file)
+
+    rows = service.list_query_traces(limit=10)
+
+    assert [row["trace_id"] for row in rows] == ["q-2"]
+
+
+@pytest.mark.unit
 def test_list_traces_rejects_non_positive_limit(tmp_path: Path) -> None:
     service = TraceService(trace_file=tmp_path / "logs" / "traces.jsonl")
 
