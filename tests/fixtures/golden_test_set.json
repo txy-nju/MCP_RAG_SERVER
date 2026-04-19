@@ -18,6 +18,15 @@
       "expected_sources": [
         "retrieval_guide.pdf"
       ]
+    },
+    {
+      "query": "如何查看 Query Trace？",
+      "expected_chunk_ids": [
+        "chunk_query_trace_001"
+      ],
+      "expected_sources": [
+        "dashboard_query_trace.md"
+      ]
     }
   ]
 }

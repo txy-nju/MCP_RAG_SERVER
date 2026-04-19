@@ -5,12 +5,22 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Protocol
 
-from core.query_engine.hybrid_search import HybridSearch
 from core.settings import Settings
 from core.types import RetrievalResult
 from libs.evaluator.base_evaluator import BaseEvaluator
+
+
+class HybridSearchLike(Protocol):
+	"""Minimal protocol required by EvalRunner for retrieval execution."""
+
+	def search(
+		self,
+		query: str,
+		top_k: int,
+		filters: dict[str, Any] | None = None,
+	) -> list[RetrievalResult]: ...
 
 
 @dataclass(slots=True)
@@ -61,7 +71,7 @@ class EvalReport:
 class EvalRunner:
 	"""Run retrieval against a golden set and aggregate evaluator metrics."""
 
-	def __init__(self, settings: Settings, hybrid_search: HybridSearch, evaluator: BaseEvaluator) -> None:
+	def __init__(self, settings: Settings, hybrid_search: HybridSearchLike, evaluator: BaseEvaluator) -> None:
 		self.settings = settings
 		self.hybrid_search = hybrid_search
 		self.evaluator = evaluator
