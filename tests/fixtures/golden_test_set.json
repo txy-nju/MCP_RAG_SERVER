@@ -1,0 +1,23 @@
+{
+  "test_cases": [
+    {
+      "query": "如何配置 Azure OpenAI？",
+      "expected_chunk_ids": [
+        "chunk_azure_config_001",
+        "chunk_azure_config_002"
+      ],
+      "expected_sources": [
+        "config_guide.pdf"
+      ]
+    },
+    {
+      "query": "如何启用混合检索？",
+      "expected_chunk_ids": [
+        "chunk_hybrid_search_001"
+      ],
+      "expected_sources": [
+        "retrieval_guide.pdf"
+      ]
+    }
+  ]
+}
