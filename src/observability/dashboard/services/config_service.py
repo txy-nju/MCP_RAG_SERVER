@@ -72,7 +72,9 @@ class ConfigService:
             ComponentCard(
                 name="Evaluation",
                 provider=s.evaluation.backend,
-                details={},
+                details={
+                    "backends": list(s.evaluation.backends) if s.evaluation.backends else [s.evaluation.backend],
+                },
             ),
         ]
         if s.vision_llm is not None:

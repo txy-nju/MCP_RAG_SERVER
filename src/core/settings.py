@@ -85,6 +85,7 @@ class EvaluationSettings:
     """Evaluation backend configuration."""
 
     backend: str
+    backends: tuple[str, ...] = ()
 
 
 @dataclass(slots=True)
@@ -251,6 +252,8 @@ def validate_settings(settings: Settings) -> None:
         raise ValueError("rerank.max_candidates must be greater than 0")
     if settings.ingestion.metadata_enricher.max_tags <= 0:
         raise ValueError("ingestion.metadata_enricher.max_tags must be greater than 0")
+    if settings.evaluation.backends and any(backend in (None, "") for backend in settings.evaluation.backends):
+        raise ValueError("evaluation.backends cannot contain empty values")
 
 
 def load_settings(path: str | Path) -> Settings:
@@ -316,6 +319,17 @@ def load_settings(path: str | Path) -> Settings:
             image_captioner=image_captioner,
         )
 
+    raw_backends = evaluation.get("backends")
+    parsed_backends: tuple[str, ...] = ()
+    if raw_backends not in (None, ""):
+        if not isinstance(raw_backends, list):
+            raise ValueError("Expected list at 'evaluation.backends'")
+        parsed_backends = tuple(str(item) for item in raw_backends if item not in (None, ""))
+        if not parsed_backends:
+            raise ValueError("evaluation.backends must contain at least one backend")
+
+    primary_backend = str(_require_value(evaluation, "backend", "evaluation")) if not parsed_backends else parsed_backends[0]
+
     settings = Settings(
         llm=_build_llm_settings(llm, "llm"),
         embedding=EmbeddingSettings(
@@ -343,7 +357,7 @@ def load_settings(path: str | Path) -> Settings:
             prompt_path=str(rerank.get("prompt_path", DEFAULT_RERANK_PROMPT_PATH)),
             max_candidates=int(rerank.get("max_candidates", DEFAULT_RERANK_MAX_CANDIDATES)),
         ),
-        evaluation=EvaluationSettings(backend=str(_require_value(evaluation, "backend", "evaluation"))),
+        evaluation=EvaluationSettings(backend=primary_backend, backends=parsed_backends),
         observability=ObservabilitySettings(
             log_level=str(_require_value(observability, "log_level", "observability")),
             trace_file=str(_require_value(observability, "trace_file", "observability")),

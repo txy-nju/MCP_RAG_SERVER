@@ -6,6 +6,7 @@ from core.settings import EvaluationSettings, Settings
 from libs.evaluator.base_evaluator import BaseEvaluator
 from libs.evaluator.custom_evaluator import CustomEvaluator
 from libs.evaluator.ragas_evaluator import RagasEvaluator
+from observability.evaluation.composite_evaluator import CompositeEvaluator
 
 
 class EvaluatorFactory:
@@ -42,6 +43,11 @@ class EvaluatorFactory:
         """Create an evaluator instance from top-level settings or evaluation settings."""
 
         evaluation_settings = cls._extract_evaluation_settings(settings)
+        if len(evaluation_settings.backends) > 1:
+            evaluators = [
+                cls.create(EvaluationSettings(backend=backend)) for backend in evaluation_settings.backends
+            ]
+            return CompositeEvaluator(evaluators)
         backend = evaluation_settings.backend.strip().lower()
         evaluator_cls = cls._providers.get(backend)
         if evaluator_cls is None:
