@@ -5,12 +5,16 @@ from __future__ import annotations
 from core.settings import EvaluationSettings, Settings
 from libs.evaluator.base_evaluator import BaseEvaluator
 from libs.evaluator.custom_evaluator import CustomEvaluator
+from libs.evaluator.ragas_evaluator import RagasEvaluator
 
 
 class EvaluatorFactory:
     """Registry-backed factory for pluggable evaluator providers."""
 
-    _providers: dict[str, type[BaseEvaluator]] = {"custom": CustomEvaluator}
+    _providers: dict[str, type[BaseEvaluator]] = {
+        "custom": CustomEvaluator,
+        "ragas": RagasEvaluator,
+    }
 
     @classmethod
     def register(cls, backend: str, evaluator_cls: type[BaseEvaluator]) -> None:
