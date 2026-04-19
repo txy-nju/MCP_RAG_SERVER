@@ -2047,7 +2047,7 @@ dashboard:
 | H1 | RagasEvaluator 实现 | [x] | 2026-04-19 | 完成 RagasEvaluator（懒加载可选依赖）、EvaluatorFactory 注册 ragas、新增并通过单测 |
 | H2 | CompositeEvaluator 实现 | [x] | 2026-04-19 | 完成 CompositeEvaluator 并行合并、EvaluatorFactory 自动组合多 backend、配置兼容 evaluation.backends 与单测 |
 | H3 | EvalRunner + Golden Test Set | [x] | 2026-04-19 | 完成 EvalRunner、golden_test_set.json、evaluate CLI，并新增 EvalRunner 与脚本测试 |
-| H4 | 评估面板页面 | [ ] | | |
+| H4 | 评估面板页面 | [x] | 2026-04-19 | 完成 Dashboard Evaluation Panel，支持 golden set 选择、backend 选择、运行评估、结果展示与会话内历史 |
 | H5 | Recall 回归测试（E2E） | [ ] | | |
 
 #### 阶段 I：端到端验收与文档收口
