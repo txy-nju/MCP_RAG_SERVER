@@ -2058,7 +2058,7 @@ dashboard:
 | I2 | E2E：Dashboard 冒烟测试 | [x] | 2026-04-20 | 新增 AppTest 冒烟测试覆盖 6 个 Dashboard 页面，构造最小有数据场景并验证无运行时异常 |
 | I3 | 完善 README（运行说明 + MCP + Dashboard） | [x] | 2026-04-20 | README 补齐快速开始、配置字段说明、Copilot/Claude MCP 配置示例、Dashboard 使用指南、测试命令与常见问题 |
 | I4 | 清理接口一致性（契约测试补齐） | [x] | 2026-04-20 | 补齐 VectorStore delete_by_metadata、RerankerFactory、CustomEvaluator 边界契约测试，并修复现有测试输入不一致后全量 pytest 通过 |
-| I5 | 全链路 E2E 验收 | [ ] | | |
+| I5 | 全链路 E2E 验收 | [x] | 2026-04-20 | 完成 ingest/query/evaluate 命令链路验收并通过全量 pytest，Dashboard 冒烟验证 6 页面可渲染（含 trace 页面） |
 
 ---
 

@@ -275,4 +275,4 @@ def test_query_script_main_collection_param(capsys: object) -> None:
 
 	mock_hybrid_search.search.assert_called_once()
 	call_kwargs = mock_hybrid_search.search.call_args.kwargs
-	assert call_kwargs["collection"] == "custom_collection"
+	assert call_kwargs["filters"] == {"collection": "custom_collection"}

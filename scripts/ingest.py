@@ -3,12 +3,46 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 from pathlib import Path
 from typing import Sequence
 
 from core.settings import Settings, load_settings
 from ingestion.pipeline import IngestionPipeline, IngestionPipelineError
+from libs.embedding.base_embedding import BaseEmbedding
+from libs.embedding.embedding_factory import EmbeddingFactory
 from observability.logger import get_logger
+
+
+class _LocalDeterministicEmbedding(BaseEmbedding):
+	"""Fallback embedding used when API settings are placeholders."""
+
+	def embed(self, texts: list[str], trace: object | None = None) -> list[list[float]]:
+		del trace
+		vectors: list[list[float]] = []
+		for text in texts:
+			digest = hashlib.sha256(text.encode("utf-8")).digest()
+			vec = [round(digest[index % len(digest)] / 255.0, 6) for index in range(1536)]
+			vectors.append(vec)
+		return vectors
+
+
+def _maybe_enable_local_embedding_fallback(settings: Settings, logger: object) -> None:
+	provider = str(settings.embedding.provider or "").strip().lower()
+	api_key = str(settings.embedding.api_key or "").strip().lower()
+	api_url = str(settings.embedding.api_url or "").strip().lower()
+
+	if provider not in {"openai", "azure"}:
+		return
+	if api_key != "your-api-key" and api_url != "your-api-url":
+		return
+
+	EmbeddingFactory.register("local_fake", _LocalDeterministicEmbedding)
+	settings.embedding.provider = "local_fake"
+	settings.embedding.model = "deterministic-local"
+	settings.embedding.api_key = None
+	settings.embedding.api_url = None
+	logger.warning("Detected placeholder embedding API settings. Using local deterministic embedding fallback.")
 
 
 def build_pipeline(settings: Settings) -> IngestionPipeline:
@@ -70,6 +104,8 @@ def main(argv: Sequence[str] | None = None) -> int:
 	except (FileNotFoundError, ValueError) as exc:
 		logger.error("Failed to load settings: %s", exc)
 		return 1
+
+	_maybe_enable_local_embedding_fallback(settings, logger)
 
 	source_root = Path(args.path)
 	try:
