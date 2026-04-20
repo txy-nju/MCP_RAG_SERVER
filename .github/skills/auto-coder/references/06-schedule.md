@@ -135,16 +135,16 @@
 | 任务编号 | 任务名称 | 状态 | 完成日期 | 备注 |
 |---------|---------|------|---------|------|
 | H1 | RagasEvaluator 实现 | [x] | 2026-04-19 | 完成 RagasEvaluator（懒加载可选依赖）、EvaluatorFactory 注册 ragas、新增并通过单测 |
-| H2 | CompositeEvaluator 实现 | [ ] | | |
-| H3 | EvalRunner + Golden Test Set | [ ] | | |
-| H4 | 评估面板页面 | [ ] | | |
-| H5 | Recall 回归测试（E2E） | [ ] | | |
+| H2 | CompositeEvaluator 实现 | [x] | 2026-04-19 | 完成 CompositeEvaluator 并行合并、EvaluatorFactory 自动组合多 backend、配置兼容 evaluation.backends 与单测 |
+| H3 | EvalRunner + Golden Test Set | [x] | 2026-04-19 | 完成 EvalRunner、golden_test_set.json、evaluate CLI，并新增 EvalRunner 与脚本测试 |
+| H4 | 评估面板页面 | [x] | 2026-04-19 | 完成 Dashboard Evaluation Panel，支持 golden set 选择、backend 选择、运行评估、结果展示与会话内历史 |
+| H5 | Recall 回归测试（E2E） | [x] | 2026-04-19 | 新增 test_recall.py 命中率阈值回归测试并补齐 golden_test_set 条目，评估链路回归测试通过 |
 
 #### 阶段 I：端到端验收与文档收口
 
 | 任务编号 | 任务名称 | 状态 | 完成日期 | 备注 |
 |---------|---------|------|---------|------|
-| I1 | E2E：MCP Client 侧调用模拟 | [ ] | | |
+| I1 | E2E：MCP Client 侧调用模拟 | [x] | 2026-04-20 | 子进程模拟 MCP Client 完整覆盖 initialize/tools/list/tools/call，query_knowledge_hub 返回 citations |
 | I2 | E2E：Dashboard 冒烟测试 | [ ] | | |
 | I3 | 完善 README（运行说明 + MCP + Dashboard） | [ ] | | |
 | I4 | 清理接口一致性（契约测试补齐） | [ ] | | |

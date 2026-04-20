@@ -261,7 +261,7 @@ A{序号}：{候选人回答原文，逐字记录，不做任何摘要或改写}
 - 本场面试官风格 `[STYLE]` 和掷骰结果 `[DICE]`
 - 实际考察的题目列表（方便后续复盘哪些题出现过，避免重复）
 
-按模板生成报告，写入 `.github/skills/interview_prep/interview_report/interview_report_YYYYMMDD_HHMMSS.md`（若目录不存在先创建），告知用户文件路径。
+按模板生成报告，写入 `.github/skills/interview-prep/interview_report/interview_report_YYYYMMDD_HHMMSS.md`（若目录不存在先创建），告知用户文件路径。
 
 ---
 
