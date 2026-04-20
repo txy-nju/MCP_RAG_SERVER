@@ -16,6 +16,7 @@ from core.settings import (
     VectorStoreSettings,
 )
 from libs.vector_store.base_vector_store import BaseVectorStore, VectorStoreQueryResult, VectorStoreRecord
+from libs.vector_store.chroma_store import ChromaStore
 from libs.vector_store.vector_store_factory import VectorStoreFactory
 
 
@@ -145,3 +146,49 @@ def test_vector_store_contract_preserves_record_and_result_shapes() -> None:
     assert result.metadata["filters"] == {"source": "doc-a"}
     assert result.metadata["query_dim"] == 3
     assert isinstance(result.score, float)
+
+
+@pytest.mark.unit
+def test_chroma_delete_by_metadata_requires_non_empty_mapping(tmp_path) -> None:
+    store = ChromaStore(
+        provider="chroma",
+        collection="contract-delete",
+        persist_path=str(tmp_path / "chroma"),
+    )
+
+    with pytest.raises(ValueError, match="non-empty mapping"):
+        store.delete_by_metadata({})
+
+    with pytest.raises(ValueError, match="non-empty mapping"):
+        store.delete_by_metadata("source_path=doc-a")  # type: ignore[arg-type]
+
+
+@pytest.mark.unit
+def test_chroma_delete_by_metadata_deletes_only_matching_records(tmp_path) -> None:
+    store = ChromaStore(
+        provider="chroma",
+        collection="contract-delete-match",
+        persist_path=str(tmp_path / "chroma"),
+    )
+    store.upsert(
+        [
+            VectorStoreRecord(
+                id="chunk-a",
+                embedding=[0.1, 0.2, 0.3],
+                text="alpha",
+                metadata={"source_path": "doc-a", "collection": "default"},
+            ),
+            VectorStoreRecord(
+                id="chunk-b",
+                embedding=[0.1, 0.2, 0.3],
+                text="beta",
+                metadata={"source_path": "doc-b", "collection": "default"},
+            ),
+        ]
+    )
+
+    deleted_count = store.delete_by_metadata({"source_path": "doc-a"})
+
+    assert deleted_count == 1
+    remaining = store.get_by_ids(["chunk-a", "chunk-b"])
+    assert [row.id for row in remaining] == ["chunk-b"]

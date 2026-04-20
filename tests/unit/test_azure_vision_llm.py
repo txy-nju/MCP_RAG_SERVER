@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import base64
 import io
 import json
 from urllib import error
@@ -21,6 +22,12 @@ from core.settings import (
 )
 from libs.llm.azure_vision_llm import AzureVisionLLM
 from libs.llm.llm_factory import LLMFactory
+
+
+_PNG_1X1 = base64.b64decode(
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8"
+    "/x8AAwMCAO6n5mQAAAAASUVORK5CYII="
+)
 
 
 class DummyResponse:
@@ -100,7 +107,7 @@ def test_chat_with_image_sends_azure_multimodal_request_for_file_path(
     tmp_path,
 ) -> None:
     image_path = tmp_path / "diagram.png"
-    image_path.write_bytes(b"fake-image-bytes")
+    image_path.write_bytes(_PNG_1X1)
 
     def fake_urlopen(req: object, timeout: int) -> DummyResponse:
         assert getattr(req, "full_url").endswith("api-version=2024-02-15-preview")
@@ -156,7 +163,7 @@ def test_chat_with_image_wraps_timeout_errors(monkeypatch: pytest.MonkeyPatch) -
     llm = LLMFactory.create_vision_llm(make_settings())
 
     with pytest.raises(ValueError, match="azure vision request failed: timeout"):
-        llm.chat_with_image("caption", b"image")
+        llm.chat_with_image("caption", _PNG_1X1)
 
 
 @pytest.mark.unit
@@ -170,4 +177,4 @@ def test_chat_with_image_wraps_authentication_errors_with_azure_code(monkeypatch
     llm = LLMFactory.create_vision_llm(make_settings())
 
     with pytest.raises(ValueError, match="azure vision request failed: http_error 401 Unauthorized"):
-        llm.chat_with_image("caption", b"image")
+        llm.chat_with_image("caption", _PNG_1X1)

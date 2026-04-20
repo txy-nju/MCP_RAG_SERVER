@@ -120,3 +120,41 @@ def test_factory_reports_unknown_backend() -> None:
 def test_register_rejects_non_evaluator_classes() -> None:
     with pytest.raises(TypeError, match="must inherit from BaseEvaluator"):
         EvaluatorFactory.register("bad", object)
+
+
+@pytest.mark.unit
+def test_custom_evaluator_returns_zero_when_retrieved_is_empty() -> None:
+    evaluator = CustomEvaluator(backend="custom")
+
+    metrics = evaluator.evaluate(
+        query="empty",
+        retrieved_ids=[],
+        golden_ids=["chunk-1"],
+    )
+
+    assert metrics == {"hit_rate": 0.0, "mrr": 0.0}
+
+
+@pytest.mark.unit
+def test_custom_evaluator_uses_first_relevant_rank_with_duplicate_goldens() -> None:
+    evaluator = CustomEvaluator(backend="custom")
+
+    metrics = evaluator.evaluate(
+        query="dup",
+        retrieved_ids=["x", "a", "a"],
+        golden_ids=["a", "a"],
+    )
+
+    assert metrics == {"hit_rate": 1.0, "mrr": 0.5}
+
+
+@pytest.mark.unit
+def test_register_rejects_empty_backend_name() -> None:
+    with pytest.raises(ValueError, match="cannot be empty"):
+        EvaluatorFactory.register("   ", FakeEvaluator)
+
+
+@pytest.mark.unit
+def test_factory_create_rejects_invalid_settings_type() -> None:
+    with pytest.raises(TypeError, match="expects Settings or EvaluationSettings"):
+        EvaluatorFactory.create(object())  # type: ignore[arg-type]

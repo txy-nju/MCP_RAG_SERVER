@@ -180,7 +180,7 @@ def test_encode_with_trace_context() -> None:
     fake_embedding = FakeEmbedding(vector_dim=2)
     encoder = DenseEncoder(settings, embedding=fake_embedding)
 
-    trace = TraceContext(trace_id="trace-001", trace_type="test")
+    trace = TraceContext(trace_id="trace-001", trace_type="query.test")
     chunks = [_make_chunk("chunk-001", "hello")]
     records = encoder.encode(chunks, trace=trace)
 
