@@ -13,10 +13,13 @@
 - [快速开始](#快速开始)
 - [配置说明](#配置说明)
 - [MCP 工具接口](#mcp-工具接口)
+- [MCP 配置示例](#mcp-配置示例)
 - [Dashboard 功能页](#dashboard-功能页)
+- [Dashboard 使用指南](#dashboard-使用指南)
 - [可支持的 Provider](#可支持的-provider)
 - [脚本使用](#脚本使用)
 - [测试](#测试)
+- [常见问题](#常见问题)
 - [Agent Skills](#agent-skills)
 - [分支说明](#分支说明)
 
@@ -257,6 +260,31 @@ ingestion:
     use_vision_llm: false   # true：调用 Vision LLM 描述图片
 ```
 
+字段说明（常用）：
+
+| 字段 | 说明 | 常见取值 |
+|------|------|----------|
+| `llm.provider` | Query 生成与可选 LLM Rerank 的后端 | `openai` / `azure` / `deepseek` / `ollama` |
+| `llm.model` | 主 LLM 模型名 | 如 `gpt-4o-mini` |
+| `llm.api_key` | LLM API Key（生产环境建议走环境变量） | 字符串 |
+| `llm.api_url` | 自定义 API 端点（代理/兼容网关） | URL |
+| `embedding.provider` | Embedding 后端 | `openai` / `azure` / `ollama` |
+| `embedding.model` | 向量模型名 | 如 `text-embedding-3-small` |
+| `vector_store.provider` | 向量库后端 | 当前默认 `chroma` |
+| `vector_store.collection` | 默认集合名 | 如 `default` |
+| `vector_store.persist_path` | Chroma 持久化目录 | `data/db/chroma` |
+| `retrieval.top_k` | 混合检索返回 Top-K 数量 | 正整数（常用 `5~20`） |
+| `rerank.provider` | 重排后端 | `none` / `cross_encoder` / `llm` |
+| `rerank.max_candidates` | 进入重排的候选上限 | 正整数（常用 `10~50`） |
+| `evaluation.backend` | 评估器后端 | `custom` / `ragas` |
+| `observability.log_level` | 日志级别 | `INFO` / `DEBUG` / `WARNING` |
+| `observability.trace_file` | Trace JSONL 文件路径 | `logs/traces.jsonl` |
+| `ingestion.chunk_refiner.use_llm` | 是否启用 LLM Chunk 重写 | `true` / `false` |
+| `ingestion.metadata_enricher.use_llm` | 是否启用 LLM 元数据增强 | `true` / `false` |
+| `ingestion.image_captioner.use_vision_llm` | 是否启用图像描述增强 | `true` / `false` |
+
+> 小贴士：开发阶段建议先用 `rerank.provider: none` + `ingestion.*.use_llm: false`，先跑通链路再逐步打开增强能力。
+
 ---
 
 ## MCP 工具接口
@@ -285,6 +313,42 @@ ingestion:
 
 ---
 
+## MCP 配置示例
+
+### GitHub Copilot：`mcp.json`
+
+适用于项目根目录或你的 Copilot MCP 配置位置。Windows 推荐把 Python 路径写成虚拟环境解释器，避免环境不一致。
+
+```json
+{
+  "servers": {
+    "modular-rag": {
+      "command": "D:/programming/myproject/MODULAR-RAG-MCP-SERVER/.venv/Scripts/python.exe",
+      "args": ["main.py"],
+      "cwd": "D:/programming/myproject/MODULAR-RAG-MCP-SERVER"
+    }
+  }
+}
+```
+
+### Claude Desktop：`claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "modular-rag": {
+      "command": "D:/programming/myproject/MODULAR-RAG-MCP-SERVER/.venv/Scripts/python.exe",
+      "args": ["main.py"],
+      "cwd": "D:/programming/myproject/MODULAR-RAG-MCP-SERVER"
+    }
+  }
+}
+```
+
+> 若你在 macOS/Linux，改为 `/.venv/bin/python` 并使用对应绝对路径。
+
+---
+
 ## Dashboard 功能页
 
 访问 `http://localhost:8501`：
@@ -297,6 +361,36 @@ ingestion:
 | **Ingestion 追踪** | 摄取历史列表，各阶段耗时与处理详情 |
 | **Query 追踪** | 查询历史，耗时瀑布图，Dense/Sparse 召回对比，Rerank 前后排名变化 |
 | **评估面板** | 运行评估任务、查看 Faithfulness / Relevancy / Hit Rate 等指标，历史趋势对比 |
+
+---
+
+## Dashboard 使用指南
+
+启动命令：
+
+```bash
+python scripts/start_dashboard.py
+```
+
+访问地址：`http://localhost:8501`
+
+推荐使用顺序（首次体验）：
+
+1. 在 **Ingestion 管理** 上传一个 PDF 并完成摄取。
+2. 到 **数据浏览器** 检查文档、Chunk 与图片索引是否存在。
+3. 运行一次 `python scripts/query.py --query "你的问题" --verbose`。
+4. 在 **Query 追踪** 和 **Ingestion 追踪** 查看阶段耗时与明细。
+5. 在 **评估面板** 选择 Golden Set 并执行评估。
+
+截图示例（建议）：
+
+- `Dashboard 首页（系统总览）`：组件配置 + Collection / Chunks 指标卡
+- `Ingestion 管理页`：上传文件、进度条、文档删除列表
+- `数据浏览器`：文档表格 + Chunk 展开详情 + Image Preview
+- `Query 追踪页`：最近查询 traces 表格 + Stage Timeline
+- `评估面板`：Aggregate Metrics + Per-query Details
+
+> 你可以将这些截图保存到 `docs/screenshots/` 作为团队内部演示材料。
 
 ---
 
@@ -372,6 +466,39 @@ pytest -m e2e           # 端到端测试
 | **Unit** | `tests/unit/` | 独立模块逻辑，无外部依赖 |
 | **Integration** | `tests/integration/` | 模块间交互、存储读写 |
 | **E2E** | `tests/e2e/` | 完整摄取链路与查询链路 |
+
+---
+
+## 常见问题
+
+### 1) API Key 配置后仍报错怎么办？
+
+- 检查 `config/settings.yaml` 是否填写了对应 provider 的 `api_key` / `api_url`。
+- 确认当前运行使用的是项目虚拟环境（`.venv`）。
+- 对于占位值（如 `your-api-key`），相关真实网络集成测试会被跳过或失败，需替换为有效 Key。
+
+### 2) 依赖安装失败怎么办？
+
+- 先升级安装工具：`python -m pip install -U pip setuptools wheel`
+- 再执行：`pip install -e .`
+- Windows 若遇到编译类依赖问题，优先使用与项目一致的 Python 版本（当前仓库建议 3.13）。
+
+### 3) Dashboard 启动了但页面没有数据？
+
+- 先执行一次摄取：`python scripts/ingest.py --path tests/fixtures/sample_documents --collection default`
+- 检查 `vector_store.persist_path` 与当前运行目录是否一致。
+
+### 4) MCP Client 连不上 Server？
+
+- 确认 MCP 配置里的 `command`、`args`、`cwd` 路径是绝对路径且存在。
+- 先在终端手动验证：`python main.py` 能否正常启动。
+- 避免在 `stdout` 打印日志（本项目日志默认走 `stderr`，已适配 stdio 通道要求）。
+
+### 5) 本地查询没有结果如何排查？
+
+- 先确认是否已摄取文档。
+- 用 `--verbose` 查看查询返回细节：`python scripts/query.py --query "你的问题" --verbose`
+- 检查 `retrieval.top_k`、collection 参数与查询关键词是否匹配。
 
 ---
 

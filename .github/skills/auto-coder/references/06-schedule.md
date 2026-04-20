@@ -145,8 +145,8 @@
 | 任务编号 | 任务名称 | 状态 | 完成日期 | 备注 |
 |---------|---------|------|---------|------|
 | I1 | E2E：MCP Client 侧调用模拟 | [x] | 2026-04-20 | 子进程模拟 MCP Client 完整覆盖 initialize/tools/list/tools/call，query_knowledge_hub 返回 citations |
-| I2 | E2E：Dashboard 冒烟测试 | [ ] | | |
-| I3 | 完善 README（运行说明 + MCP + Dashboard） | [ ] | | |
+| I2 | E2E：Dashboard 冒烟测试 | [x] | 2026-04-20 | 新增 AppTest 冒烟测试覆盖 6 个 Dashboard 页面，构造最小有数据场景并验证无运行时异常 |
+| I3 | 完善 README（运行说明 + MCP + Dashboard） | [x] | 2026-04-20 | README 补齐快速开始、配置字段说明、Copilot/Claude MCP 配置示例、Dashboard 使用指南、测试命令与常见问题 |
 | I4 | 清理接口一致性（契约测试补齐） | [ ] | | |
 | I5 | 全链路 E2E 验收 | [ ] | | |
 
