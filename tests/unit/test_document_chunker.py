@@ -47,8 +47,10 @@ class FakeSplitter(BaseSplitter):
     def __init__(self, chunks: list[str]) -> None:
         super().__init__(provider="fake", chunk_size=100, chunk_overlap=0)
         self._chunks = chunks
+        self.last_text: str | None = None
 
     def split_text(self, text: str, trace: Any = None) -> list[str]:
+        self.last_text = text
         return list(self._chunks)
 
 
@@ -316,6 +318,23 @@ def test_chunk_is_serializable_to_dict() -> None:
     assert isinstance(payload["metadata"], dict)
     assert payload["start_offset"] >= 0
     assert payload["end_offset"] >= payload["start_offset"]
+
+
+@pytest.mark.unit
+def test_split_document_sanitizes_surrogate_characters_before_split_and_chunk_build() -> None:
+    raw_text = "prefix \ud83d broken"
+    raw_chunk = "chunk \ud83d text"
+    splitter = FakeSplitter([raw_chunk])
+    chunker = DocumentChunker.__new__(DocumentChunker)
+    chunker._splitter = splitter
+    doc = _simple_document(raw_text)
+
+    chunks = chunker.split_document(doc)
+
+    assert splitter.last_text is not None
+    assert "\ud83d" not in splitter.last_text
+    assert len(chunks) == 1
+    assert "\ud83d" not in chunks[0].text
 
 
 @pytest.mark.unit

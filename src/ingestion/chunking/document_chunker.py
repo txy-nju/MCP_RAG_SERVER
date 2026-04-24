@@ -31,21 +31,30 @@ class DocumentChunker:
 
     def split_document(self, document: Document) -> list[Chunk]:
         """Split a Document into a list of Chunks with full metadata setup."""
-        texts = self._splitter.split_text(document.text)
+        normalized_document_text = self._sanitize_text(document.text)
+        texts = self._splitter.split_text(normalized_document_text)
         chunks: list[Chunk] = []
         for index, text in enumerate(texts):
-            chunk_id = self._generate_chunk_id(document.id, index, text)
-            metadata = self._inherit_metadata(document, index, text)
+            normalized_text = self._sanitize_text(text)
+            chunk_id = self._generate_chunk_id(document.id, index, normalized_text)
+            metadata = self._inherit_metadata(document, index, normalized_text)
             chunk = Chunk(
                 id=chunk_id,
-                text=text,
+                text=normalized_text,
                 metadata=metadata,
                 start_offset=0,
-                end_offset=len(text),
+                end_offset=len(normalized_text),
                 source_ref={"doc_id": document.id},
             )
             chunks.append(chunk)
         return chunks
+
+    @staticmethod
+    def _sanitize_text(text: str) -> str:
+        """Remove invalid Unicode surrogate code points before downstream encoding/splitting."""
+        if not text:
+            return text
+        return str(text).encode("utf-8", errors="replace").decode("utf-8")
 
     @staticmethod
     def _generate_chunk_id(doc_id: str, index: int, text: str) -> str:
