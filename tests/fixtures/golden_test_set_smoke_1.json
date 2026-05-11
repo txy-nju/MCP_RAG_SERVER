@@ -1,0 +1,23 @@
+{
+  "metadata": {
+    "generated_by": "ragas_testset_generator",
+    "collection": "perf_10k",
+    "requested_queries": 1,
+    "usable_queries": 1,
+    "fallback_used": 0,
+    "skipped_no_query": 0,
+    "seed": 42,
+    "resumed_from_existing": false
+  },
+  "test_cases": [
+    {
+      "query": "What is the relashunship between [O III] luminosity and radio luminosity in pure-AGN subsamples?",
+      "expected_chunk_ids": [
+        "b25578e99d955d91cbe38a630e1b5fd18d46a75586b9108c5b5e768895ae23c2"
+      ],
+      "expected_sources": [
+        "data\\documents\\perf_10k\\astro-ph\\0704.2074.pdf"
+      ]
+    }
+  ]
+}

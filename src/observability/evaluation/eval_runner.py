@@ -71,10 +71,17 @@ class EvalReport:
 class EvalRunner:
 	"""Run retrieval against a golden set and aggregate evaluator metrics."""
 
-	def __init__(self, settings: Settings, hybrid_search: HybridSearchLike, evaluator: BaseEvaluator) -> None:
+	def __init__(
+		self,
+		settings: Settings,
+		hybrid_search: HybridSearchLike,
+		evaluator: BaseEvaluator,
+		collection: str | None = None,
+	) -> None:
 		self.settings = settings
 		self.hybrid_search = hybrid_search
 		self.evaluator = evaluator
+		self.collection = str(collection).strip() if collection is not None else None
 
 	def run(self, test_set_path: str | Path) -> EvalReport:
 		"""Load a golden test set, run retrieval, and aggregate metrics."""
@@ -83,10 +90,11 @@ class EvalRunner:
 		case_results: list[EvalCaseResult] = []
 
 		for case in cases:
+			collection = self.collection if self.collection else self.settings.vector_store.collection
 			results = self.hybrid_search.search(
 				query=case.query,
 				top_k=self.settings.retrieval.top_k,
-				filters={"collection": self.settings.vector_store.collection},
+				filters={"collection": collection} if collection else None,
 			)
 			retrieved_chunk_ids = [result.chunk_id for result in results]
 			retrieved_sources = [str(result.metadata.get("source_path", "")) for result in results]

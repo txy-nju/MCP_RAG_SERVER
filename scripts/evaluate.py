@@ -63,6 +63,11 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
 		help="Path to settings YAML file.",
 	)
 	parser.add_argument(
+		"--collection",
+		default=None,
+		help="Collection filter passed to retrieval (default: from settings).",
+	)
+	parser.add_argument(
 		"--json",
 		action="store_true",
 		help="Print evaluation report as JSON.",
@@ -109,7 +114,12 @@ def main(argv: Sequence[str] | None = None) -> int:
 	try:
 		hybrid_search = build_hybrid_search(settings)
 		evaluator = EvaluatorFactory.create(settings)
-		runner = EvalRunner(settings=settings, hybrid_search=hybrid_search, evaluator=evaluator)
+		runner = EvalRunner(
+			settings=settings,
+			hybrid_search=hybrid_search,
+			evaluator=evaluator,
+			collection=args.collection,
+		)
 		report = runner.run(test_set_path)
 	except Exception as exc:
 		logger.error("Evaluation failed: %s", exc)

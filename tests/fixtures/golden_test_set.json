@@ -1,31 +1,103 @@
 {
+  "metadata": {
+    "generated_by": "ragas_testset_generator",
+    "collection": "perf_10k",
+    "requested_queries": 10,
+    "usable_queries": 10,
+    "fallback_used": 0,
+    "skipped_no_query": 0,
+    "seed": 42,
+    "resumed_from_existing": false
+  },
   "test_cases": [
     {
-      "query": "如何配置 Azure OpenAI？",
+      "query": "How does σ relate to radio luminosity in galaxies?",
       "expected_chunk_ids": [
-        "chunk_azure_config_001",
-        "chunk_azure_config_002"
+        "b25578e99d955d91cbe38a630e1b5fd18d46a75586b9108c5b5e768895ae23c2"
       ],
       "expected_sources": [
-        "config_guide.pdf"
+        "data\\documents\\perf_10k\\astro-ph\\0704.2074.pdf"
       ]
     },
     {
-      "query": "如何启用混合检索？",
+      "query": "How AGN activity relate to radio luminosity and star formation?",
       "expected_chunk_ids": [
-        "chunk_hybrid_search_001"
+        "b25578e99d955d91cbe38a630e1b5fd18d46a75586b9108c5b5e768895ae23c2"
       ],
       "expected_sources": [
-        "retrieval_guide.pdf"
+        "data\\documents\\perf_10k\\astro-ph\\0704.2074.pdf"
       ]
     },
     {
-      "query": "如何查看 Query Trace？",
+      "query": "What D n(4000) index mean for star formation and radio luminosity?",
       "expected_chunk_ids": [
-        "chunk_query_trace_001"
+        "b25578e99d955d91cbe38a630e1b5fd18d46a75586b9108c5b5e768895ae23c2"
       ],
       "expected_sources": [
-        "dashboard_query_trace.md"
+        "data\\documents\\perf_10k\\astro-ph\\0704.2074.pdf"
+      ]
+    },
+    {
+      "query": "Why was Mg identified as under-abundant in the astrophysical analysis?",
+      "expected_chunk_ids": [
+        "acc1a5f7d1bfa0eb577faffb3b20458f87e0372686d86a0c761114461d1a85d2"
+      ],
+      "expected_sources": [
+        "data\\documents\\perf_10k\\astro-ph\\0704.0452.pdf"
+      ]
+    },
+    {
+      "query": "Why Fe XVII lines not detected and what it mean for abundance?",
+      "expected_chunk_ids": [
+        "acc1a5f7d1bfa0eb577faffb3b20458f87e0372686d86a0c761114461d1a85d2"
+      ],
+      "expected_sources": [
+        "data\\documents\\perf_10k\\astro-ph\\0704.0452.pdf"
+      ]
+    },
+    {
+      "query": "Why were the lines at 10.051 Å and 11.029 Å initially associated with Fe XVII, and what led to their reclassification?",
+      "expected_chunk_ids": [
+        "acc1a5f7d1bfa0eb577faffb3b20458f87e0372686d86a0c761114461d1a85d2"
+      ],
+      "expected_sources": [
+        "data\\documents\\perf_10k\\astro-ph\\0704.0452.pdf"
+      ]
+    },
+    {
+      "query": "What GALEX objects were included in the analysis and why were some weak sources retained?",
+      "expected_chunk_ids": [
+        "97829fd7ca47344586d8651c1ee10abdb406beda6647f09ba8098ce2d7ca4a68"
+      ],
+      "expected_sources": [
+        "data\\documents\\perf_10k\\astro-ph\\0705.1278.pdf"
+      ]
+    },
+    {
+      "query": "Whaat is the GALEX counterpahrt used for in the study?",
+      "expected_chunk_ids": [
+        "97829fd7ca47344586d8651c1ee10abdb406beda6647f09ba8098ce2d7ca4a68"
+      ],
+      "expected_sources": [
+        "data\\documents\\perf_10k\\astro-ph\\0705.1278.pdf"
+      ]
+    },
+    {
+      "query": "What criteria did Alexander et al. (2003) use to define an X-ray source in their catalog?",
+      "expected_chunk_ids": [
+        "97829fd7ca47344586d8651c1ee10abdb406beda6647f09ba8098ce2d7ca4a68"
+      ],
+      "expected_sources": [
+        "data\\documents\\perf_10k\\astro-ph\\0705.1278.pdf"
+      ]
+    },
+    {
+      "query": "Who is Vázquez-Semadeni in astrophysics research?",
+      "expected_chunk_ids": [
+        "7e56d547cdd9b1dcf34a9aa583703d1b28ecb12f3d6f58235fac2d208bc96af4"
+      ],
+      "expected_sources": [
+        "data\\documents\\perf_10k\\astro-ph\\0705.0559.pdf"
       ]
     }
   ]

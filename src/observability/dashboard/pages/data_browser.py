@@ -65,6 +65,14 @@ try:
 	rows = service.list_documents(collection=active_collection)
 
 	st.subheader("Documents")
+	total_docs = len(rows)
+	total_chunks = sum(row.chunk_count for row in rows)
+	total_images = sum(row.image_count for row in rows)
+	col_a, col_b, col_c = st.columns(3)
+	col_a.metric("总文档数", total_docs)
+	col_b.metric("总 Chunk 数", total_chunks)
+	col_c.metric("总图片数", total_images)
+
 	table_rows = [
 		{
 			"source_path": row.source_path,

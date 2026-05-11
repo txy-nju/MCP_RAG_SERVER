@@ -1,0 +1,48 @@
+llm:
+  provider: openai
+  model: gpt-4o
+  api_key: 
+  api_url: 
+
+embedding:
+  provider: openai
+  model: text-embedding-3-small
+  api_key: 
+  api_url: 
+
+splitter:
+  provider: recursive
+  chunk_size: 1000
+  chunk_overlap: 200
+
+vector_store:
+  provider: chroma
+  collection: perf_10k
+  persist_path: data/db/chroma
+
+retrieval:
+  top_k: 10
+
+rerank:
+  provider: none
+  prompt_path: config/prompts/rerank.txt
+  max_candidates: 20
+
+evaluation:
+  backend: custom
+
+observability:
+  log_level: INFO
+  trace_file: logs/traces.jsonl
+
+ingestion:
+  chunk_refiner:
+    use_llm: false
+    prompt_path: config/prompts/chunk_refinement.txt
+  metadata_enricher:
+    use_llm: false
+    prompt_path: config/prompts/metadata_enrichment.txt
+    max_tags: 5
+  image_captioner:
+    use_vision_llm: false
+    prompt_path: config/prompts/image_captioning.txt
