@@ -8,7 +8,7 @@ from typing import Any
 
 import pytest
 
-from core.settings import (
+from modular_rag.core.settings import (
     ChunkRefinerSettings,
     EmbeddingSettings,
     EvaluationSettings,
@@ -21,10 +21,10 @@ from core.settings import (
     SplitterSettings,
     VectorStoreSettings,
 )
-from core.trace.trace_context import TraceContext
-from core.types import Chunk
-from ingestion.transform.chunk_refiner import ChunkRefiner
-from libs.llm.base_llm import BaseLLM
+from modular_rag.core.trace.trace_context import TraceContext
+from modular_rag.core.types import Chunk
+from modular_rag.ingestion.transform.chunk_refiner import ChunkRefiner
+from modular_rag.libs.llm.base_llm import BaseLLM
 
 
 class FakeLLM(BaseLLM):

@@ -7,9 +7,9 @@ from urllib import error
 
 import pytest
 
-from core.settings import LLMSettings
-from libs.llm.llm_factory import LLMFactory
-from libs.llm.ollama_llm import OllamaLLM
+from modular_rag.core.settings import LLMSettings
+from modular_rag.libs.llm.llm_factory import LLMFactory
+from modular_rag.libs.llm.ollama_llm import OllamaLLM
 
 
 class DummyResponse:

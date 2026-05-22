@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from observability.evaluation.eval_runner import EvalCaseResult, EvalReport
+from modular_rag.observability.evaluation.eval_runner import EvalCaseResult, EvalReport
 
 
 def test_evaluate_script_parse_args_defaults() -> None:

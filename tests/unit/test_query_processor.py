@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from core.query_engine.query_processor import QueryProcessor
+from modular_rag.core.query_engine.query_processor import QueryProcessor
 
 
 @pytest.mark.unit

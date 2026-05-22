@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from core.settings import (
+from modular_rag.core.settings import (
     EmbeddingSettings,
     EvaluationSettings,
     LLMSettings,
@@ -15,9 +15,9 @@ from core.settings import (
     SplitterSettings,
     VectorStoreSettings,
 )
-from libs.evaluator.base_evaluator import BaseEvaluator
-from libs.evaluator.custom_evaluator import CustomEvaluator
-from libs.evaluator.evaluator_factory import EvaluatorFactory
+from modular_rag.libs.evaluator.base_evaluator import BaseEvaluator
+from modular_rag.libs.evaluator.custom_evaluator import CustomEvaluator
+from modular_rag.libs.evaluator.evaluator_factory import EvaluatorFactory
 
 
 class FakeEvaluator(BaseEvaluator):

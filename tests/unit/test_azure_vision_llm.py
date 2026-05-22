@@ -9,7 +9,7 @@ from urllib import error
 
 import pytest
 
-from core.settings import (
+from modular_rag.core.settings import (
     EmbeddingSettings,
     EvaluationSettings,
     LLMSettings,
@@ -20,8 +20,8 @@ from core.settings import (
     SplitterSettings,
     VectorStoreSettings,
 )
-from libs.llm.azure_vision_llm import AzureVisionLLM
-from libs.llm.llm_factory import LLMFactory
+from modular_rag.libs.llm.azure_vision_llm import AzureVisionLLM
+from modular_rag.libs.llm.llm_factory import LLMFactory
 
 
 _PNG_1X1 = base64.b64decode(

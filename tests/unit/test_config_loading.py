@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from core.settings import Settings, load_settings
+from modular_rag.core.settings import Settings, load_settings
 from main import main
 
 

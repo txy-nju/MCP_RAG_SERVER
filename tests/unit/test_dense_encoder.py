@@ -14,7 +14,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from core.settings import (
+from modular_rag.core.settings import (
     EmbeddingSettings,
     EvaluationSettings,
     LLMSettings,
@@ -25,10 +25,10 @@ from core.settings import (
     SplitterSettings,
     VectorStoreSettings,
 )
-from core.trace.trace_context import TraceContext
-from core.types import Chunk, ChunkRecord
-from ingestion.embedding.dense_encoder import DenseEncoder
-from libs.embedding.base_embedding import BaseEmbedding
+from modular_rag.core.trace.trace_context import TraceContext
+from modular_rag.core.types import Chunk, ChunkRecord
+from modular_rag.ingestion.embedding.dense_encoder import DenseEncoder
+from modular_rag.libs.embedding.base_embedding import BaseEmbedding
 
 
 # ---------------------------------------------------------------------------

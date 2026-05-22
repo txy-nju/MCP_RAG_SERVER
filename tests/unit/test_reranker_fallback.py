@@ -6,10 +6,10 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from core.query_engine.reranker import Reranker, RerankResult
-from core.settings import Settings
-from core.types import RetrievalResult
-from libs.reranker.base_reranker import RerankCandidate, RerankerFallbackError
+from modular_rag.core.query_engine.reranker import Reranker, RerankResult
+from modular_rag.core.settings import Settings
+from modular_rag.core.types import RetrievalResult
+from modular_rag.libs.reranker.base_reranker import RerankCandidate, RerankerFallbackError
 
 
 @pytest.fixture

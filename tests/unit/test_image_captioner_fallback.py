@@ -6,7 +6,7 @@ from typing import Any
 
 import pytest
 
-from core.settings import (
+from modular_rag.core.settings import (
     EmbeddingSettings,
     EvaluationSettings,
     ImageCaptionerSettings,
@@ -19,10 +19,10 @@ from core.settings import (
     SplitterSettings,
     VectorStoreSettings,
 )
-from core.trace.trace_context import TraceContext
-from core.types import Chunk
-from ingestion.transform.image_captioner import ImageCaptioner
-from libs.llm.base_vision_llm import BaseVisionLLM, ChatResponse
+from modular_rag.core.trace.trace_context import TraceContext
+from modular_rag.core.types import Chunk
+from modular_rag.ingestion.transform.image_captioner import ImageCaptioner
+from modular_rag.libs.llm.base_vision_llm import BaseVisionLLM, ChatResponse
 
 
 class FakeVisionLLM(BaseVisionLLM):

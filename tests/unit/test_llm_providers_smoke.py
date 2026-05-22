@@ -7,11 +7,11 @@ from urllib import error
 
 import pytest
 
-from core.settings import LLMSettings
-from libs.llm.azure_llm import AzureLLM
-from libs.llm.deepseek_llm import DeepSeekLLM
-from libs.llm.llm_factory import LLMFactory
-from libs.llm.openai_llm import OpenAILLM
+from modular_rag.core.settings import LLMSettings
+from modular_rag.libs.llm.azure_llm import AzureLLM
+from modular_rag.libs.llm.deepseek_llm import DeepSeekLLM
+from modular_rag.libs.llm.llm_factory import LLMFactory
+from modular_rag.libs.llm.openai_llm import OpenAILLM
 
 
 class DummyResponse:

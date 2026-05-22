@@ -8,10 +8,10 @@ from pathlib import Path
 
 import pytest
 
-from ingestion.storage.image_storage import ImageStorage
-from libs.loader.file_integrity import SQLiteIntegrityChecker
-from libs.vector_store.base_vector_store import VectorStoreRecord
-from libs.vector_store.chroma_store import ChromaStore
+from modular_rag.ingestion.storage.image_storage import ImageStorage
+from modular_rag.libs.loader.file_integrity import SQLiteIntegrityChecker
+from modular_rag.libs.vector_store.base_vector_store import VectorStoreRecord
+from modular_rag.libs.vector_store.chroma_store import ChromaStore
 
 
 _PNG_1X1_BASE64 = (

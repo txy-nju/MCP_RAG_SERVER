@@ -13,8 +13,8 @@ from typing import Any
 
 import pytest
 
-from libs.vector_store.base_vector_store import VectorStoreRecord
-from libs.vector_store.chroma_store import ChromaStore
+from modular_rag.libs.vector_store.base_vector_store import VectorStoreRecord
+from modular_rag.libs.vector_store.chroma_store import ChromaStore
 
 
 class _MockEmbeddingHandler(BaseHTTPRequestHandler):

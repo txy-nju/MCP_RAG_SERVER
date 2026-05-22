@@ -12,9 +12,9 @@ from types import SimpleNamespace
 
 import pytest
 
-from core.query_engine.reranker import RerankResult
-from core.types import RetrievalResult
-from mcp_server.protocol_handler import ProtocolHandler
+from modular_rag.core.query_engine.reranker import RerankResult
+from modular_rag.core.types import RetrievalResult
+from modular_rag.mcp_server.protocol_handler import ProtocolHandler
 
 
 @pytest.mark.integration

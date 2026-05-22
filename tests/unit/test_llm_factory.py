@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from core.settings import (
+from modular_rag.core.settings import (
     EmbeddingSettings,
     EvaluationSettings,
     LLMSettings,
@@ -15,8 +15,8 @@ from core.settings import (
     SplitterSettings,
     VectorStoreSettings,
 )
-from libs.llm.base_llm import BaseLLM
-from libs.llm.llm_factory import LLMFactory
+from modular_rag.libs.llm.base_llm import BaseLLM
+from modular_rag.libs.llm.llm_factory import LLMFactory
 
 
 class FakeLLM(BaseLLM):

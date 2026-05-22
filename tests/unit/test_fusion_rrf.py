@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from core.query_engine.fusion import RRFFuser
-from core.types import RetrievalResult
+from modular_rag.core.query_engine.fusion import RRFFuser
+from modular_rag.core.types import RetrievalResult
 
 
 def _result(chunk_id: str, score: float = 0.0) -> RetrievalResult:

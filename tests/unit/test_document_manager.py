@@ -8,7 +8,7 @@ from typing import Any
 
 import pytest
 
-from ingestion.document_manager import DocumentManager
+from modular_rag.ingestion.document_manager import DocumentManager
 
 
 @dataclass(slots=True)

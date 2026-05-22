@@ -20,7 +20,7 @@ from unittest.mock import patch
 
 import pytest
 
-from core.settings import (
+from modular_rag.core.settings import (
     EmbeddingSettings,
     EvaluationSettings,
     LLMSettings,
@@ -31,9 +31,9 @@ from core.settings import (
     SplitterSettings,
     VectorStoreSettings,
 )
-from core.types import Chunk, Document
-from ingestion.chunking.document_chunker import DocumentChunker
-from libs.splitter.base_splitter import BaseSplitter
+from modular_rag.core.types import Chunk, Document
+from modular_rag.ingestion.chunking.document_chunker import DocumentChunker
+from modular_rag.libs.splitter.base_splitter import BaseSplitter
 
 
 # ---------------------------------------------------------------------------

@@ -6,7 +6,7 @@ import json
 
 import pytest
 
-from core.settings import (
+from modular_rag.core.settings import (
     EmbeddingSettings,
     EvaluationSettings,
     LLMSettings,
@@ -17,11 +17,11 @@ from core.settings import (
     SplitterSettings,
     VectorStoreSettings,
 )
-from libs.llm.base_llm import BaseLLM
-from libs.llm.llm_factory import LLMFactory
-from libs.reranker.base_reranker import NoneReranker, RerankCandidate, RerankerFallbackError
-from libs.reranker.llm_reranker import LLMReranker
-from libs.reranker.reranker_factory import RerankerFactory
+from modular_rag.libs.llm.base_llm import BaseLLM
+from modular_rag.libs.llm.llm_factory import LLMFactory
+from modular_rag.libs.reranker.base_reranker import NoneReranker, RerankCandidate, RerankerFallbackError
+from modular_rag.libs.reranker.llm_reranker import LLMReranker
+from modular_rag.libs.reranker.reranker_factory import RerankerFactory
 
 
 class FakeLLM(BaseLLM):

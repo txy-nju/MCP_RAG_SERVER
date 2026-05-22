@@ -9,9 +9,9 @@ from typing import Any
 
 import pytest
 
-from core.settings import EvaluationSettings
-from libs.evaluator.ragas_evaluator import RagasEvaluator
-from libs.evaluator.evaluator_factory import EvaluatorFactory
+from modular_rag.core.settings import EvaluationSettings
+from modular_rag.libs.evaluator.ragas_evaluator import RagasEvaluator
+from modular_rag.libs.evaluator.evaluator_factory import EvaluatorFactory
 
 
 @pytest.fixture(autouse=True)

@@ -7,7 +7,7 @@ from typing import cast
 
 import pytest
 
-from core.settings import (
+from modular_rag.core.settings import (
     EmbeddingSettings,
     EvaluationSettings,
     LLMSettings,
@@ -18,17 +18,17 @@ from core.settings import (
     SplitterSettings,
     VectorStoreSettings,
 )
-from core.trace.trace_context import TraceContext
-from core.types import Chunk, ChunkRecord, Document
-from ingestion.chunking.document_chunker import DocumentChunker
-from ingestion.embedding.batch_processor import BatchProcessor
-from ingestion.pipeline import IngestionPipeline, IngestionPipelineError
-from ingestion.storage.bm25_indexer import BM25Indexer
-from ingestion.storage.image_storage import ImageStorage
-from ingestion.storage.vector_upserter import VectorUpserter
-from ingestion.transform.base_transform import BaseTransform
-from libs.loader.base_loader import BaseLoader
-from libs.loader.file_integrity import FileIntegrityChecker
+from modular_rag.core.trace.trace_context import TraceContext
+from modular_rag.core.types import Chunk, ChunkRecord, Document
+from modular_rag.ingestion.chunking.document_chunker import DocumentChunker
+from modular_rag.ingestion.embedding.batch_processor import BatchProcessor
+from modular_rag.ingestion.pipeline import IngestionPipeline, IngestionPipelineError
+from modular_rag.ingestion.storage.bm25_indexer import BM25Indexer
+from modular_rag.ingestion.storage.image_storage import ImageStorage
+from modular_rag.ingestion.storage.vector_upserter import VectorUpserter
+from modular_rag.ingestion.transform.base_transform import BaseTransform
+from modular_rag.libs.loader.base_loader import BaseLoader
+from modular_rag.libs.loader.file_integrity import FileIntegrityChecker
 
 
 class FakeIntegrityChecker:

@@ -31,11 +31,11 @@ from pathlib import Path
 from typing import Any, Iterable
 from urllib.parse import urlparse
 
-from core.query_engine import DenseRetriever, HybridSearch, QueryProcessor, SparseRetriever
-from core.settings import Settings, load_settings
-from ingestion.storage.bm25_indexer import BM25Indexer
-from libs.embedding.embedding_factory import EmbeddingFactory
-from libs.vector_store.vector_store_factory import VectorStoreFactory
+from modular_rag.core.query_engine import DenseRetriever, HybridSearch, QueryProcessor, SparseRetriever
+from modular_rag.core.settings import Settings, load_settings
+from modular_rag.ingestion.storage.bm25_indexer import BM25Indexer
+from modular_rag.libs.embedding.embedding_factory import EmbeddingFactory
+from modular_rag.libs.vector_store.vector_store_factory import VectorStoreFactory
 
 
 def parse_args() -> argparse.Namespace:

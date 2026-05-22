@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import pytest
 
-from core.settings import RerankSettings
-from libs.reranker.base_reranker import RerankCandidate, RerankerFallbackError
-from libs.reranker.cross_encoder_reranker import CrossEncoderReranker
-from libs.reranker.reranker_factory import RerankerFactory
+from modular_rag.core.settings import RerankSettings
+from modular_rag.libs.reranker.base_reranker import RerankCandidate, RerankerFallbackError
+from modular_rag.libs.reranker.cross_encoder_reranker import CrossEncoderReranker
+from modular_rag.libs.reranker.reranker_factory import RerankerFactory
 
 
 def make_candidates() -> list[RerankCandidate]:

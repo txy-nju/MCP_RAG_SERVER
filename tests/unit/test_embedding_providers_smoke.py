@@ -7,10 +7,10 @@ from urllib import error
 
 import pytest
 
-from core.settings import EmbeddingSettings
-from libs.embedding.azure_embedding import AzureEmbedding
-from libs.embedding.embedding_factory import EmbeddingFactory
-from libs.embedding.openai_embedding import OpenAIEmbedding
+from modular_rag.core.settings import EmbeddingSettings
+from modular_rag.libs.embedding.azure_embedding import AzureEmbedding
+from modular_rag.libs.embedding.embedding_factory import EmbeddingFactory
+from modular_rag.libs.embedding.openai_embedding import OpenAIEmbedding
 
 
 class DummyResponse:

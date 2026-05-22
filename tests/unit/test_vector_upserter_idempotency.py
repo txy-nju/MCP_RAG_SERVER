@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from core.settings import (
+from modular_rag.core.settings import (
     EmbeddingSettings,
     EvaluationSettings,
     LLMSettings,
@@ -15,9 +15,9 @@ from core.settings import (
     SplitterSettings,
     VectorStoreSettings,
 )
-from core.types import ChunkRecord
-from ingestion.storage.vector_upserter import VectorUpserter
-from libs.vector_store.base_vector_store import BaseVectorStore, VectorStoreRecord
+from modular_rag.core.types import ChunkRecord
+from modular_rag.ingestion.storage.vector_upserter import VectorUpserter
+from modular_rag.libs.vector_store.base_vector_store import BaseVectorStore, VectorStoreRecord
 
 
 class FakeVectorStore(BaseVectorStore):

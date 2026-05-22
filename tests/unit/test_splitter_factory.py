@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from core.settings import (
+from modular_rag.core.settings import (
     EmbeddingSettings,
     EvaluationSettings,
     LLMSettings,
@@ -15,9 +15,9 @@ from core.settings import (
     SplitterSettings,
     VectorStoreSettings,
 )
-from libs.splitter.base_splitter import BaseSplitter
-from libs.splitter.recursive_splitter import RecursiveSplitter
-from libs.splitter.splitter_factory import SplitterFactory
+from modular_rag.libs.splitter.base_splitter import BaseSplitter
+from modular_rag.libs.splitter.recursive_splitter import RecursiveSplitter
+from modular_rag.libs.splitter.splitter_factory import SplitterFactory
 
 
 class FakeSplitter(BaseSplitter):

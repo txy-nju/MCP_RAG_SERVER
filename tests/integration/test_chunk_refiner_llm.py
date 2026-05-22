@@ -11,9 +11,9 @@ from pathlib import Path
 
 import pytest
 
-from core.settings import ChunkRefinerSettings, IngestionSettings, load_settings
-from core.types import Chunk
-from ingestion.transform.chunk_refiner import ChunkRefiner
+from modular_rag.core.settings import ChunkRefinerSettings, IngestionSettings, load_settings
+from modular_rag.core.types import Chunk
+from modular_rag.ingestion.transform.chunk_refiner import ChunkRefiner
 
 
 def _has_real_llm_credentials(settings) -> bool:

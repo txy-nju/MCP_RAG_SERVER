@@ -24,15 +24,16 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Sequence
 
-from core.query_engine import DenseRetriever, HybridSearch, QueryProcessor, Reranker, SparseRetriever
-from core.settings import Settings, load_settings
-from core.trace.trace_context import TraceContext
-from ingestion.storage.bm25_indexer import BM25Indexer
-from libs.embedding.base_embedding import BaseEmbedding
-from libs.embedding.embedding_factory import EmbeddingFactory
-from libs.evaluator.custom_evaluator import CustomEvaluator
-from libs.vector_store.vector_store_factory import VectorStoreFactory
-from observability.logger import get_logger
+from modular_rag.core.query_engine import DenseRetriever, HybridSearch, QueryProcessor, Reranker, SparseRetriever
+from modular_rag.core.settings import Settings, load_settings
+from modular_rag.core.trace.trace_context import TraceContext
+from modular_rag.ingestion.storage.bm25_indexer import BM25Indexer
+from modular_rag.libs.embedding.base_embedding import BaseEmbedding
+from modular_rag.libs.embedding.embedding_factory import EmbeddingFactory
+from modular_rag.libs.evaluator.base_evaluator import BaseEvaluator
+from modular_rag.libs.evaluator.evaluator_factory import EvaluatorFactory
+from modular_rag.libs.vector_store.vector_store_factory import VectorStoreFactory
+from modular_rag.observability.logger import get_logger
 
 
 # ---------------------------------------------------------------------------
@@ -174,7 +175,7 @@ def _run_query(
     query: str,
     hybrid_search: HybridSearch,
     reranker: Reranker,
-    evaluator: CustomEvaluator,
+    evaluator: BaseEvaluator,
     expected_chunk_ids: list[str],
     collection: str | None,
     top_k: int,
@@ -304,7 +305,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     # --- Build components --------------------------------------------------
     try:
         hybrid_search, reranker = _build_components(settings)
-        evaluator = CustomEvaluator()
+        evaluator = EvaluatorFactory.create(settings)
     except Exception as exc:
         logger.error("Component initialization failed: %s", exc)
         return 1

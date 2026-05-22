@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from core.settings import (
+from modular_rag.core.settings import (
     EmbeddingSettings,
     EvaluationSettings,
     LLMSettings,
@@ -15,8 +15,8 @@ from core.settings import (
     SplitterSettings,
     VectorStoreSettings,
 )
-from libs.reranker.base_reranker import BaseReranker, NoneReranker, RerankCandidate
-from libs.reranker.reranker_factory import RerankerFactory
+from modular_rag.libs.reranker.base_reranker import BaseReranker, NoneReranker, RerankCandidate
+from modular_rag.libs.reranker.reranker_factory import RerankerFactory
 
 
 class FakeReranker(BaseReranker):

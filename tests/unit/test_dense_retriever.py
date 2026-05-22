@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from core.query_engine.dense_retriever import DenseRetriever
-from core.settings import (
+from modular_rag.core.query_engine.dense_retriever import DenseRetriever
+from modular_rag.core.settings import (
     EmbeddingSettings,
     EvaluationSettings,
     LLMSettings,
@@ -16,7 +16,7 @@ from core.settings import (
     SplitterSettings,
     VectorStoreSettings,
 )
-from libs.vector_store.base_vector_store import VectorStoreQueryResult
+from modular_rag.libs.vector_store.base_vector_store import VectorStoreQueryResult
 
 
 class FakeEmbedding:

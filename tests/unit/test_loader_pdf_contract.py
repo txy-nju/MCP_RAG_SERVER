@@ -7,7 +7,7 @@ from typing import Any
 
 import pytest
 
-from libs.loader.pdf_loader import PdfLoader
+from modular_rag.libs.loader.pdf_loader import PdfLoader
 import libs.loader.pdf_loader as pdf_loader_module
 
 

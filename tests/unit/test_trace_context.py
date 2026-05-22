@@ -7,8 +7,8 @@ from typing import Any
 
 import pytest
 
-from core.trace.trace_collector import TraceCollector
-from core.trace.trace_context import TraceContext
+from modular_rag.core.trace.trace_collector import TraceCollector
+from modular_rag.core.trace.trace_context import TraceContext
 import core.trace.trace_context as trace_context_module
 
 

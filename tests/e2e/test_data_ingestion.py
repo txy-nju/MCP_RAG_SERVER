@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from ingestion.pipeline import IngestionResult
+from modular_rag.ingestion.pipeline import IngestionResult
 from scripts.ingest import main
 
 

@@ -7,8 +7,8 @@ from pathlib import Path
 
 import pytest
 
-from core.types import ChunkRecord
-from ingestion.storage.bm25_indexer import BM25Indexer
+from modular_rag.core.types import ChunkRecord
+from modular_rag.ingestion.storage.bm25_indexer import BM25Indexer
 
 
 

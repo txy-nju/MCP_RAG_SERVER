@@ -7,7 +7,7 @@ from typing import Any
 
 import pytest
 
-from observability.dashboard.services.data_service import DataService
+from modular_rag.observability.dashboard.services.data_service import DataService
 
 
 @dataclass(slots=True)

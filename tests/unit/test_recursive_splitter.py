@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from libs.splitter.recursive_splitter import RecursiveSplitter
+from modular_rag.libs.splitter.recursive_splitter import RecursiveSplitter
 
 
 class FakeRecursiveCharacterTextSplitter:

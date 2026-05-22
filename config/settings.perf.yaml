@@ -1,14 +1,14 @@
 llm:
   provider: openai
   model: gpt-4o
-  api_key: 
-  api_url: 
+  api_key: sk-MMgvEpKYNhIXmir30aRUJDRx0O8D5r2zxt64DgWd1znF5asA
+  api_url: https://api.openai-proxy.org/v1
 
 embedding:
   provider: openai
   model: text-embedding-3-small
-  api_key: 
-  api_url: 
+  api_key: sk-MMgvEpKYNhIXmir30aRUJDRx0O8D5r2zxt64DgWd1znF5asA
+  api_url: https://api.openai-proxy.org/v1
 
 splitter:
   provider: recursive
@@ -17,7 +17,7 @@ splitter:
 
 vector_store:
   provider: chroma
-  collection: perf_10k
+  collection: default
   persist_path: data/db/chroma
 
 retrieval:
@@ -29,7 +29,7 @@ rerank:
   max_candidates: 20
 
 evaluation:
-  backend: custom
+  backend: ragas
 
 observability:
   log_level: INFO

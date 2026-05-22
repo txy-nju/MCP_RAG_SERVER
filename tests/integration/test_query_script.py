@@ -6,8 +6,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from core.query_engine import DenseRetriever, HybridSearch, QueryProcessor, Reranker, SparseRetriever
-from core.types import RetrievalResult
+from modular_rag.core.query_engine import DenseRetriever, HybridSearch, QueryProcessor, Reranker, SparseRetriever
+from modular_rag.core.types import RetrievalResult
 
 
 @pytest.fixture

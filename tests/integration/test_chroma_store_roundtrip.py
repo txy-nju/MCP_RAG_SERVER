@@ -6,10 +6,10 @@ from pathlib import Path
 
 import pytest
 
-from core.settings import VectorStoreSettings
-from libs.vector_store.base_vector_store import VectorStoreQueryResult, VectorStoreRecord
-from libs.vector_store.chroma_store import ChromaStore
-from libs.vector_store.vector_store_factory import VectorStoreFactory
+from modular_rag.core.settings import VectorStoreSettings
+from modular_rag.libs.vector_store.base_vector_store import VectorStoreQueryResult, VectorStoreRecord
+from modular_rag.libs.vector_store.chroma_store import ChromaStore
+from modular_rag.libs.vector_store.vector_store_factory import VectorStoreFactory
 
 
 @pytest.mark.integration

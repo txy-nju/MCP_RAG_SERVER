@@ -11,9 +11,9 @@ from pathlib import Path
 
 import pytest
 
-from core.settings import load_settings
-from core.types import Chunk
-from ingestion.transform.metadata_enricher import MetadataEnricher
+from modular_rag.core.settings import load_settings
+from modular_rag.core.types import Chunk
+from modular_rag.ingestion.transform.metadata_enricher import MetadataEnricher
 
 
 def _is_real_secret(value: str | None) -> bool:

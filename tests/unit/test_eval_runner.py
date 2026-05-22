@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from core.settings import (
+from modular_rag.core.settings import (
     EmbeddingSettings,
     EvaluationSettings,
     LLMSettings,
@@ -18,9 +18,9 @@ from core.settings import (
     SplitterSettings,
     VectorStoreSettings,
 )
-from core.types import RetrievalResult
-from libs.evaluator.custom_evaluator import CustomEvaluator
-from observability.evaluation import EvalRunner
+from modular_rag.core.types import RetrievalResult
+from modular_rag.libs.evaluator.custom_evaluator import CustomEvaluator
+from modular_rag.observability.evaluation import EvalRunner
 
 
 class FakeHybridSearch:

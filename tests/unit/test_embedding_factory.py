@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from core.settings import (
+from modular_rag.core.settings import (
     EmbeddingSettings,
     EvaluationSettings,
     LLMSettings,
@@ -15,8 +15,8 @@ from core.settings import (
     SplitterSettings,
     VectorStoreSettings,
 )
-from libs.embedding.base_embedding import BaseEmbedding
-from libs.embedding.embedding_factory import EmbeddingFactory
+from modular_rag.libs.embedding.base_embedding import BaseEmbedding
+from modular_rag.libs.embedding.embedding_factory import EmbeddingFactory
 
 
 class FakeEmbedding(BaseEmbedding):

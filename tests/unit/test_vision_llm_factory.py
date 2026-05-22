@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from core.settings import (
+from modular_rag.core.settings import (
     EmbeddingSettings,
     EvaluationSettings,
     LLMSettings,
@@ -17,8 +17,8 @@ from core.settings import (
     SplitterSettings,
     VectorStoreSettings,
 )
-from libs.llm.base_vision_llm import BaseVisionLLM, ChatResponse
-from libs.llm.llm_factory import LLMFactory
+from modular_rag.libs.llm.base_vision_llm import BaseVisionLLM, ChatResponse
+from modular_rag.libs.llm.llm_factory import LLMFactory
 
 
 class FakeVisionLLM(BaseVisionLLM):

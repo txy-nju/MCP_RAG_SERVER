@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from core.response.response_builder import ResponseBuilder
-from core.types import RetrievalResult
+from modular_rag.core.response.response_builder import ResponseBuilder
+from modular_rag.core.types import RetrievalResult
 
 
 def test_response_builder_builds_markdown_and_structured_citations() -> None:

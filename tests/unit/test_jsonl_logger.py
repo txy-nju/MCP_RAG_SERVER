@@ -8,9 +8,9 @@ from pathlib import Path
 
 import pytest
 
-from core.trace.trace_collector import TraceCollector
-from core.trace.trace_context import TraceContext
-from observability.logger import JSONFormatter, get_trace_logger, write_trace
+from modular_rag.core.trace.trace_collector import TraceCollector
+from modular_rag.core.trace.trace_context import TraceContext
+from modular_rag.observability.logger import JSONFormatter, get_trace_logger, write_trace
 
 
 @pytest.mark.unit

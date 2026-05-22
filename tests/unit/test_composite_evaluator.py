@@ -6,10 +6,10 @@ from collections.abc import Iterator
 
 import pytest
 
-from core.settings import EvaluationSettings
-from libs.evaluator.base_evaluator import BaseEvaluator
-from libs.evaluator.evaluator_factory import EvaluatorFactory
-from observability.evaluation.composite_evaluator import CompositeEvaluator
+from modular_rag.core.settings import EvaluationSettings
+from modular_rag.libs.evaluator.base_evaluator import BaseEvaluator
+from modular_rag.libs.evaluator.evaluator_factory import EvaluatorFactory
+from modular_rag.observability.evaluation.composite_evaluator import CompositeEvaluator
 
 
 class HitRateEvaluator(BaseEvaluator):

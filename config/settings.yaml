@@ -1,14 +1,14 @@
 llm:
   provider: openai
   model: gpt-4o-mini
-  api_key: your-api-key
-  api_url: your-api-url
+  api_key: Link_LA3VLmkTUPIlIEirCHjFtB3WPsIRSmAfVf9EVl1hpb
+  api_url: https://api.link-ai.tech/v1
 
 embedding:
   provider: openai
   model: text-embedding-3-small
-  api_key: your-api-key
-  api_url: your-api-url
+  api_key: sk-MMgvEpKYNhIXmir30aRUJDRx0O8D5r2zxt64DgWd1znF5asA
+  api_url: https://api.openai-proxy.org/v1/embeddings
 
 splitter:
   provider: recursive

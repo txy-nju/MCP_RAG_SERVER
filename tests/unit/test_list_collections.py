@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from mcp_server.tools.list_collections import build_list_collections_tool_handler, list_collections
+from modular_rag.mcp_server.tools.list_collections import build_list_collections_tool_handler, list_collections
 
 
 @pytest.mark.unit

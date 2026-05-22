@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from ingestion.storage.image_storage import ImageStorage
+from modular_rag.ingestion.storage.image_storage import ImageStorage
 
 
 @pytest.mark.unit

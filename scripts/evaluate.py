@@ -8,15 +8,15 @@ import json
 from pathlib import Path
 from typing import Sequence
 
-from core.query_engine import DenseRetriever, HybridSearch, QueryProcessor, SparseRetriever
-from core.settings import Settings, load_settings
-from ingestion.storage.bm25_indexer import BM25Indexer
-from libs.embedding.base_embedding import BaseEmbedding
-from libs.embedding.embedding_factory import EmbeddingFactory
-from libs.evaluator.evaluator_factory import EvaluatorFactory
-from libs.vector_store.vector_store_factory import VectorStoreFactory
-from observability.evaluation import EvalRunner
-from observability.logger import get_logger
+from modular_rag.core.query_engine import DenseRetriever, HybridSearch, QueryProcessor, SparseRetriever
+from modular_rag.core.settings import Settings, load_settings
+from modular_rag.ingestion.storage.bm25_indexer import BM25Indexer
+from modular_rag.libs.embedding.base_embedding import BaseEmbedding
+from modular_rag.libs.embedding.embedding_factory import EmbeddingFactory
+from modular_rag.libs.evaluator.evaluator_factory import EvaluatorFactory
+from modular_rag.libs.vector_store.vector_store_factory import VectorStoreFactory
+from modular_rag.observability.evaluation import EvalRunner
+from modular_rag.observability.logger import get_logger
 
 
 class _LocalDeterministicEmbedding(BaseEmbedding):

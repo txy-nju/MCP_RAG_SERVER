@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from libs.loader.file_integrity import SQLiteIntegrityChecker
+from modular_rag.libs.loader.file_integrity import SQLiteIntegrityChecker
 
 
 @pytest.fixture()

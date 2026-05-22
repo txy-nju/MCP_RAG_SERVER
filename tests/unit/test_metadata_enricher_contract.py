@@ -6,7 +6,7 @@ from typing import Any
 
 import pytest
 
-from core.settings import (
+from modular_rag.core.settings import (
     EmbeddingSettings,
     EvaluationSettings,
     IngestionSettings,
@@ -19,10 +19,10 @@ from core.settings import (
     SplitterSettings,
     VectorStoreSettings,
 )
-from core.trace.trace_context import TraceContext
-from core.types import Chunk
-from ingestion.transform.metadata_enricher import MetadataEnricher
-from libs.llm.base_llm import BaseLLM
+from modular_rag.core.trace.trace_context import TraceContext
+from modular_rag.core.types import Chunk
+from modular_rag.ingestion.transform.metadata_enricher import MetadataEnricher
+from modular_rag.libs.llm.base_llm import BaseLLM
 
 
 class FakeLLM(BaseLLM):

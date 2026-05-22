@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from observability.dashboard.services.trace_service import TraceService
+from modular_rag.observability.dashboard.services.trace_service import TraceService
 
 
 def _write_lines(path: Path, lines: list[str]) -> None:

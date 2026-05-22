@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 
 import mcp_server.tools.get_document_summary as summary_module
-from mcp_server.tools.get_document_summary import (
+from modular_rag.mcp_server.tools.get_document_summary import (
     build_get_document_summary_tool_handler,
     get_document_summary,
 )

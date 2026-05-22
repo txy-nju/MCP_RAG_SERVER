@@ -6,13 +6,13 @@ from typing import cast
 
 import pytest
 
-from core.query_engine.dense_retriever import DenseRetriever
-from core.query_engine.fusion import RRFFuser
-from core.query_engine.hybrid_search import HybridSearch
-from core.query_engine.query_processor import QueryProcessor
-from core.query_engine.reranker import Reranker
-from core.query_engine.sparse_retriever import SparseRetriever
-from core.settings import (
+from modular_rag.core.query_engine.dense_retriever import DenseRetriever
+from modular_rag.core.query_engine.fusion import RRFFuser
+from modular_rag.core.query_engine.hybrid_search import HybridSearch
+from modular_rag.core.query_engine.query_processor import QueryProcessor
+from modular_rag.core.query_engine.reranker import Reranker
+from modular_rag.core.query_engine.sparse_retriever import SparseRetriever
+from modular_rag.core.settings import (
 	EmbeddingSettings,
 	EvaluationSettings,
 	LLMSettings,
@@ -23,8 +23,8 @@ from core.settings import (
 	SplitterSettings,
 	VectorStoreSettings,
 )
-from core.trace.trace_context import TraceContext
-from core.types import RetrievalResult
+from modular_rag.core.trace.trace_context import TraceContext
+from modular_rag.core.types import RetrievalResult
 
 
 class FakeDenseRetriever:

@@ -7,11 +7,11 @@ import hashlib
 from pathlib import Path
 from typing import Sequence
 
-from core.settings import Settings, load_settings
-from ingestion.pipeline import IngestionPipeline, IngestionPipelineError
-from libs.embedding.base_embedding import BaseEmbedding
-from libs.embedding.embedding_factory import EmbeddingFactory
-from observability.logger import get_logger
+from modular_rag.core.settings import Settings, load_settings
+from modular_rag.ingestion.pipeline import IngestionPipeline, IngestionPipelineError
+from modular_rag.libs.embedding.base_embedding import BaseEmbedding
+from modular_rag.libs.embedding.embedding_factory import EmbeddingFactory
+from modular_rag.observability.logger import get_logger
 
 
 class _LocalDeterministicEmbedding(BaseEmbedding):

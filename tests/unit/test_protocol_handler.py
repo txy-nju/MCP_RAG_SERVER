@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from mcp_server.protocol_handler import ProtocolHandler, ToolDefinition
+from modular_rag.mcp_server.protocol_handler import ProtocolHandler, ToolDefinition
 
 
 @pytest.fixture

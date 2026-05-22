@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
-from core.query_engine.sparse_retriever import SparseRetriever
-from core.settings import (
+from modular_rag.core.query_engine.sparse_retriever import SparseRetriever
+from modular_rag.core.settings import (
     EmbeddingSettings,
     EvaluationSettings,
     LLMSettings,
@@ -18,7 +18,7 @@ from core.settings import (
     SplitterSettings,
     VectorStoreSettings,
 )
-from libs.vector_store.base_vector_store import VectorStoreQueryResult
+from modular_rag.libs.vector_store.base_vector_store import VectorStoreQueryResult
 
 
 class FakeBM25Indexer:

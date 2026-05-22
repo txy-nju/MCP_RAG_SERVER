@@ -7,9 +7,9 @@ from urllib import error
 
 import pytest
 
-from core.settings import EmbeddingSettings
-from libs.embedding.embedding_factory import EmbeddingFactory
-from libs.embedding.ollama_embedding import OllamaEmbedding
+from modular_rag.core.settings import EmbeddingSettings
+from modular_rag.libs.embedding.embedding_factory import EmbeddingFactory
+from modular_rag.libs.embedding.ollama_embedding import OllamaEmbedding
 
 
 class DummyResponse:

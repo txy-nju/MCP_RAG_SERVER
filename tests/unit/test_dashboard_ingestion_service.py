@@ -8,7 +8,7 @@ from typing import Any
 
 import pytest
 
-from observability.dashboard.services.ingestion_service import IngestionService
+from modular_rag.observability.dashboard.services.ingestion_service import IngestionService
 
 
 @dataclass(slots=True)

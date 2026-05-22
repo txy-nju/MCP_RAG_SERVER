@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from core.settings import Settings, load_settings
-from observability.logger import get_logger
+from modular_rag.core.settings import Settings, load_settings
+from modular_rag.observability.logger import get_logger
 
 
 def main(settings_path: str | Path = "config/settings.yaml") -> int:
