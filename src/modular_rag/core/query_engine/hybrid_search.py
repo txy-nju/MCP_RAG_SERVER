@@ -70,7 +70,10 @@ class HybridSearch:
 					},
 				},
 			)
-		candidate_top_k = max(self.settings.retrieval.top_k, top_k * 2)
+		# Large candidate pool mitigates ChromaDB's ANN-first-then-filter
+		# behavior: with a small n_results, chunks from the target collection
+		# may fall outside the ANN top-k and be dropped by the where clause.
+		candidate_top_k = max(self.settings.retrieval.top_k, top_k * 10, 50)
 
 		dense_results: list[RetrievalResult] = []
 		sparse_results: list[RetrievalResult] = []
@@ -229,7 +232,8 @@ class HybridSearch:
 			include = True
 			for key, expected in normalized_filters.items():
 				if key not in metadata:
-					continue
+					include = False
+					break
 				if str(metadata[key]) != str(expected):
 					include = False
 					break

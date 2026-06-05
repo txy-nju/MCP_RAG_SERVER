@@ -27,6 +27,17 @@ class BM25Indexer:
     _DEFAULT_INDEX_DIR = Path("data/db/bm25")
     _DEFAULT_INDEX_FILE = "bm25_index.json"
 
+    @classmethod
+    def _resolve_index_dir(cls, index_dir: str | Path | None = None) -> Path:
+        """Resolve index directory: explicit arg > BM25_INDEX_DIR env > default."""
+        import os as _os
+        if index_dir is not None:
+            return Path(index_dir)
+        env_dir = _os.environ.get("BM25_INDEX_DIR")
+        if env_dir:
+            return Path(env_dir)
+        return cls._DEFAULT_INDEX_DIR
+
     def __init__(
         self,
         index_dir: str | Path | None = None,
@@ -34,7 +45,7 @@ class BM25Indexer:
         k1: float = 1.5,
         b: float = 0.75,
     ) -> None:
-        self._index_dir = Path(index_dir) if index_dir is not None else self._DEFAULT_INDEX_DIR
+        self._index_dir = self._resolve_index_dir(index_dir)
         self._index_dir.mkdir(parents=True, exist_ok=True)
         self._index_path = self._index_dir / self._DEFAULT_INDEX_FILE
 

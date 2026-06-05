@@ -62,14 +62,16 @@ class TranscriptTextLoader(BaseLoader):
             raise ValueError("load_segments(): base_metadata must contain 'source_path'")
 
         docs: list[Document] = []
-        for seg in segments:
+        for idx, seg in enumerate(segments):
             start = float(seg.get("start", 0))
             end = float(seg.get("end", start))
             text = str(seg.get("text", "")).strip()
             if not text:
                 continue
+            orig_source_path = base_metadata.get("source_path", "")
             meta = {
                 **base_metadata,
+                "source_path": f"{orig_source_path}/seg_{idx}_{int(start * 1000)}",
                 "start_s": start,
                 "end_s": end,
                 "time_range": f"{self._fmt_time(start)}-{self._fmt_time(end)}",

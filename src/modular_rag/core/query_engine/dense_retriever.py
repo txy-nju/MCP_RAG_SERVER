@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import logging
+
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
@@ -11,6 +13,8 @@ from modular_rag.libs.embedding.base_embedding import BaseEmbedding
 from modular_rag.libs.embedding.embedding_factory import EmbeddingFactory
 from modular_rag.libs.vector_store.base_vector_store import BaseVectorStore, VectorStoreQueryResult
 from modular_rag.libs.vector_store.vector_store_factory import VectorStoreFactory
+
+logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
 	from modular_rag.core.trace.trace_context import TraceContext
@@ -54,6 +58,7 @@ class DenseRetriever:
 
 		vector = [float(value) for value in embeddings[0]]
 		raw_results = self.vector_store.query(vector=vector, top_k=top_k, filters=filters, trace=trace)
+		logger.debug("DenseRetriever: top_k=%d filters=%s result_count=%d", top_k, filters, len(raw_results))
 		return [self._to_retrieval_result(item) for item in raw_results]
 
 	@staticmethod

@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from hashlib import sha256
-
 from modular_rag.core.settings import Settings
 from modular_rag.core.trace.trace_context import TraceContext
 from modular_rag.core.types import ChunkRecord
@@ -26,7 +24,8 @@ class VectorUpserter:
 			trace: Optional trace context passed through to the vector store.
 
 		Returns:
-			Deterministic vector-store record IDs in input order.
+			Record IDs in input order, matching DocumentChunker IDs so that
+			BM25 and Chroma share the same chunk identity for hybrid search.
 
 		Raises:
 			ValueError: If a record has no dense vector.
@@ -44,32 +43,22 @@ class VectorUpserter:
 					"run DenseEncoder before VectorUpserter"
 				)
 
-			source_path = str(record.metadata.get("source_path", ""))
-			chunk_index = int(record.metadata.get("chunk_index", position))
-			stable_id = self._build_chunk_id(
-				source_path=source_path,
-				chunk_index=chunk_index,
-				text=record.text,
-			)
-
+			# Use record.id directly instead of regenerating a different ID.
+			# This ensures Chroma and BM25 share the same chunk identity,
+			# which is critical for SparseRetriever's get_by_ids lookup.
+			chunk_id = record.id
 			metadata = dict(record.metadata)
-			metadata["chunk_id"] = stable_id
+			metadata["chunk_id"] = chunk_id
 
 			normalized_records.append(
 				VectorStoreRecord(
-					id=stable_id,
+					id=chunk_id,
 					embedding=list(record.dense_vector),
 					metadata=metadata,
 					text=record.text,
 				)
 			)
-			normalized_ids.append(stable_id)
+			normalized_ids.append(chunk_id)
 
 		self._vector_store.upsert(normalized_records, trace=trace)
 		return normalized_ids
-
-	@staticmethod
-	def _build_chunk_id(*, source_path: str, chunk_index: int, text: str) -> str:
-		content_hash = sha256(text.encode("utf-8")).hexdigest()
-		raw = f"{source_path}|{chunk_index}|{content_hash[:8]}"
-		return sha256(raw.encode("utf-8")).hexdigest()

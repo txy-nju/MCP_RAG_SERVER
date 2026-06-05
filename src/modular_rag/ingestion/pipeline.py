@@ -234,6 +234,12 @@ class IngestionPipeline:
 			chunks = self._chunker.split_document(document)
 			for chunk in chunks:
 				chunk.metadata.setdefault("collection", collection)
+				# Scope chunk ID with collection name to prevent ID collisions
+				# when the same document is ingested into multiple collections
+				# (e.g. single-video "video_{vid}" vs KB "kb_{kbid}").
+				# Both Chroma and BM25 receive this scoped ID, keeping hybrid
+				# search consistent.
+				chunk.id = f"{collection}_{chunk.id}"
 			trace.record_stage(
 				stage,
 				{

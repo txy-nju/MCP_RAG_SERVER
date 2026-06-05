@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib
+import logging
 import json
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
@@ -11,6 +12,8 @@ from modular_rag.libs.vector_store.base_vector_store import BaseVectorStore, Vec
 
 if TYPE_CHECKING:
     from modular_rag.core.trace.trace_context import TraceContext
+
+logger = logging.getLogger(__name__)
 
 
 class ChromaStore(BaseVectorStore):
@@ -109,6 +112,25 @@ class ChromaStore(BaseVectorStore):
         documents = payload.get("documents", [[]])[0]
         metadatas = payload.get("metadatas", [[]])[0]
         distances = payload.get("distances", [[]])[0]
+
+        # Diagnostic: if query returned 0, probe with get() to check data presence
+        if len(ids) == 0 and filters:
+            total = self._collection.count()
+            get_payload = self._collection.get(
+                where=self._normalize_where(filters), limit=5, include=["metadatas"]
+            )
+            get_ids = get_payload.get("ids", [])
+            logger.warning(
+                "ChromaStore.query returned 0: n_results=%d where=%s total=%d get_matches=%d",
+                top_k, self._normalize_where(filters), total, len(get_ids),
+            )
+            if get_ids:
+                sample_meta = (get_payload.get("metadatas") or [{}])[0] or {}
+                logger.warning(
+                    "ChromaStore.query: data EXISTS for filter but ANN+where returned 0. "
+                    "stored_collection=%s sample_keys=%s → post-filtering issue",
+                    sample_meta.get("collection", "MISSING"), list(sample_meta.keys()),
+                )
 
         results: list[VectorStoreQueryResult] = []
         for record_id, document, metadata, distance in zip(ids, documents, metadatas, distances, strict=False):
