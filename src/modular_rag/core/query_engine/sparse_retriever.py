@@ -26,7 +26,11 @@ class SparseRetriever:
 
 	def __post_init__(self) -> None:
 		if self.bm25_indexer is None:
-			self.bm25_indexer = BM25Indexer()
+			bm25_dir = getattr(self.settings.vector_store, "bm25_index_dir", None)
+			if bm25_dir:
+				self.bm25_indexer = BM25Indexer(index_dir=bm25_dir)
+			else:
+				self.bm25_indexer = BM25Indexer()
 			if Path(self.bm25_indexer.index_path).exists():
 				self.bm25_indexer.load()
 		if self.vector_store is None:

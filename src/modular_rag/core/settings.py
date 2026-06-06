@@ -62,6 +62,7 @@ class VectorStoreSettings:
     provider: str
     collection: str
     persist_path: str = DEFAULT_VECTOR_STORE_PERSIST_PATH
+    bm25_index_dir: str | None = None
 
 
 @dataclass(slots=True)

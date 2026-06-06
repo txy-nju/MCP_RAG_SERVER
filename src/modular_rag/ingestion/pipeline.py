@@ -82,7 +82,14 @@ class IngestionPipeline:
 		]
 		self._batch_processor = batch_processor or BatchProcessor(settings)
 		self._vector_upserter = vector_upserter or VectorUpserter(settings)
-		self._bm25_indexer = bm25_indexer or BM25Indexer()
+		if bm25_indexer is not None:
+			self._bm25_indexer = bm25_indexer
+		else:
+			bm25_dir = getattr(settings.vector_store, "bm25_index_dir", None)
+			if bm25_dir:
+				self._bm25_indexer = BM25Indexer(index_dir=bm25_dir)
+			else:
+				self._bm25_indexer = BM25Indexer()
 		# 若磁盘上已有索引，自动加载以支持 rebuild=False 增量追加（否则会覆盖历史数据）
 		if bm25_indexer is None and self._bm25_indexer.index_path.exists():
 			self._bm25_indexer.load()
